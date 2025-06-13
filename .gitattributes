@@ -1,0 +1,10 @@
+third_party/demucs/ckpt/htdemucs.pth filter=lfs diff=lfs merge=lfs -text
+ckpt/100000_dpo.pt filter=lfs diff=lfs merge=lfs -text
+*.pt filter=lfs diff=lfs merge=lfs -text
+*.safetensors filter=lfs diff=lfs merge=lfs -text
+ckpt/vae/autoencoder_music_1320k.ckpt filter=lfs diff=lfs merge=lfs -text
+ckpt/models--lengyue233--content-vec-best/blobs/d8dd400e054ddf4e6be75dab5a2549db748cc99e756a097c496c099f65a4854e filter=lfs diff=lfs merge=lfs -text
+codeclm/tokenizer/Flow1dVAE/third_party/wespeaker/voxceleb_resnet34_LM/voxceleb_resnet34_LM.onnx filter=lfs diff=lfs merge=lfs -text
+codeclm/tokenizer/Flow1dVAE/third_party/wespeaker/voxceleb_resnet34_LM/voxceleb_resnet34_LM.pt filter=lfs diff=lfs merge=lfs -text
+third_party/flash_attn-2.7.4.post1+cu12torch2.2cxx11abiFALSE-cp39-cp39-linux_x86_64.whl filter=lfs diff=lfs merge=lfs -text
+ckpt/60000_alnew.pt filter=lfs diff=lfs merge=lfs -text
