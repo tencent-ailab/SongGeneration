@@ -11,9 +11,9 @@ This repository is the official code repository for LeVo: High-Quality Song Gene
 
 |          Model           |                         HuggingFace                          |
 | :----------------------: | :----------------------------------------------------------: |
-|  HunyuanMusic-base(zh)   | https://huggingface.co/waytan22/SongGeneration-LeVo/tree/main/ckpt/songgeneration_base_zh |
-| HunyuanMusic-base(zh&en) |                         Coming soon                          |
-| HunyuanMusic-full(zh&en) |                         Coming soon                          |
+|  SongGeneration-base(zh)   | https://huggingface.co/waytan22/SongGeneration-LeVo/tree/main/ckpt/songgeneration_base_zh |
+| SongGeneration-base(zh&en) |                         Coming soon                          |
+| SongGeneration-full(zh&en) |                         Coming soon                          |
 
 ## Overview
 
