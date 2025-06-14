@@ -151,7 +151,7 @@ The `descriptions` field allows you to control various musical attributes of the
 ```
 @article{lei2025levo,
   title={LeVo: High-Quality Song Generation with Multi-Preference Alignment},
-  author={Lei, Shun and Xu, Yaoxun and Lin, Zhiwei and Zhang, Huaicheng and Tan, Wei and Chen, Hangting and Yu, Jianwei and Zhang, Yixuan and Yang, Chenyu and Zhu, Haina and Shuai, Wang and Zhiyong, Wu and Dong, Yu},
+  author={Lei, Shun and Xu, Yaoxun and Lin, Zhiwei and Zhang, Huaicheng and Tan, Wei and Chen, Hangting and Yu, Jianwei and Zhang, Yixuan and Yang, Chenyu and Zhu, Haina and Wang, Shuai and Wu, Zhiyong and Yu, Dong},
   journal={arXiv preprint arXiv:2506.07520},
   year={2025}
 }
