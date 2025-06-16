@@ -11,7 +11,7 @@ This repository is the official code repository for LeVo: High-Quality Song Gene
 
 |          Model           |                         HuggingFace                          |
 | :----------------------: | :----------------------------------------------------------: |
-|  SongGeneration-base(zh)   | https://huggingface.co/waytan22/SongGeneration-LeVo/tree/main/ckpt/songgeneration_base_zh |
+|  SongGeneration-base(zh)   | <a href="https://huggingface.co/tencent/SongGeneration/tree/main/ckpt/songgeneration_base_zh">v20250520</a> |
 | SongGeneration-base(zh&en) |                         Coming soon                          |
 | SongGeneration-full(zh&en) |                         Coming soon                          |
 
@@ -159,5 +159,5 @@ The `descriptions` field allows you to control various musical attributes of the
 
 ## License
 
-The code and weights in this repository is released under the MIT license as found in the [LICENSE](LICENSE) file.
+The code and weights in this repository is released in the [LICENSE](LICENSE)  file.
 
