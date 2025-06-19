@@ -5,7 +5,7 @@
 </p>
 
 
-This repository is the official code repository for LeVo: High-Quality Song Generation with Multi-Preference Alignment. In this repository, we provide the SongGeneration model, inference scripts, and the checkpoint that has been trained on the Million Song Dataset.
+This repository is the official code repository for LeVo: High-Quality Song Generation with Multi-Preference Alignment. In this repository, we provide the SongGeneration model, inference scripts, and checkpoints trained on the Million Song Dataset that support both Chinese and English.
 
 ## Model Versions
 
@@ -77,7 +77,7 @@ sh generate.sh ckpt_path lyrics.jsonl output_path
 - An example command may look like:
   
   ```
-  sh generate.sh ckpt/songgeneration_base_zh sample/lyrics.jsonl sample/output
+  sh generate.sh ckpt/songgeneration_base sample/lyrics.jsonl sample/output
   ```
 
 ## Input Guide
