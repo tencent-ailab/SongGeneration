@@ -36,6 +36,10 @@ class CodecLM:
                  max_duration: tp.Optional[float] = None, seperate_tokenizer: AudioTokenizer = None):
         self.name = name
         self.audiotokenizer = audiotokenizer
+        if self.audiotokenizer:
+            self.frame_rate = self.audiotokenizer.frame_rate
+        else:
+            self.frame_rate = 25
         self.lm = lm
         self.seperate_tokenizer = seperate_tokenizer
         # import pdb; pdb.set_trace()
@@ -47,7 +51,7 @@ class CodecLM:
         assert max_duration is not None
 
         self.max_duration: float = max_duration
-        self.device = next(iter(lm.parameters())).device
+        self.device = torch.device("cuda")
         self.generation_params: dict = {}
         # self.set_generation_params(duration=15)  # 15 seconds by default
         self.set_generation_params(duration=15, extend_stride=self.max_duration // 2)
@@ -56,23 +60,6 @@ class CodecLM:
             self.autocast = TorchAutocast(enabled=False)
         else:
             self.autocast = TorchAutocast(enabled=False)
-
-
-
-    @property
-    def frame_rate(self) -> float:
-        """Roughly the number of AR steps per seconds."""
-        return self.audiotokenizer.frame_rate
-
-    @property
-    def sample_rate(self) -> int:
-        """Sample rate of the generated audio."""
-        return self.audiotokenizer.sample_rate
-
-    @property
-    def audio_channels(self) -> int:
-        """Audio channels of the generated audio."""
-        return self.audiotokenizer.channels
 
     def set_generation_params(self, use_sampling: bool = True, top_k: int = 250,
                               top_p: float = 0.0, temperature: float = 1.0,
@@ -185,7 +172,7 @@ class CodecLM:
         assert len(lyrics) == 1
         texts = [lyric for lyric in lyrics]
         audio_qt_embs = []
-        target_melody_token_len = self.lm.cfg.prompt_len * self.audiotokenizer.frame_rate
+        target_melody_token_len = self.lm.cfg.prompt_len * self.frame_rate
         # import pdb; pdb.set_trace()
         if melody_wavs is None:
             melody_tokens = torch.full((1,1,target_melody_token_len), 16385, device=self.device).long()
@@ -207,39 +194,39 @@ class CodecLM:
                 melody_tokens = melody_tokens[...,:target_melody_token_len]
             elif melody_tokens.shape[-1] < target_melody_token_len:
                 melody_tokens = torch.cat([melody_tokens, torch.full((1,1,target_melody_token_len - melody_tokens.shape[-1]), 16385, device=self.device).long()], dim=-1)
-        if self.seperate_tokenizer is not None:
-            if bgm_wavs is None:
-                assert vocal_wavs is None, "vocal_wavs is not None when bgm_wavs is None"
-                bgm_tokens = torch.full((1,1,target_melody_token_len), 16385, device=self.device).long()
-                vocal_tokens = torch.full((1,1,target_melody_token_len), 16385, device=self.device).long()
+
+        if bgm_wavs is None:
+            assert vocal_wavs is None, "vocal_wavs is not None when bgm_wavs is None"
+            bgm_tokens = torch.full((1,1,target_melody_token_len), 16385, device=self.device).long()
+            vocal_tokens = torch.full((1,1,target_melody_token_len), 16385, device=self.device).long()
+        else:
+            assert vocal_wavs is not None, "vocal_wavs is None when bgm_wavs is not None"
+            if type(vocal_wavs) == list:
+                vocal_wavs = torch.stack(vocal_wavs, dim=0)
+            if type(bgm_wavs) == list:
+                bgm_wavs = torch.stack(bgm_wavs, dim=0)
+            vocal_wavs = vocal_wavs.to(self.device)
+            bgm_wavs = bgm_wavs.to(self.device)
+            if melody_is_wav:
+                vocal_tokens, bgm_tokens = self.seperate_tokenizer.encode(vocal_wavs, bgm_wavs)
             else:
-                assert vocal_wavs is not None, "vocal_wavs is None when bgm_wavs is not None"
-                if type(vocal_wavs) == list:
-                    vocal_wavs = torch.stack(vocal_wavs, dim=0)
-                if type(bgm_wavs) == list:
-                    bgm_wavs = torch.stack(bgm_wavs, dim=0)
-                vocal_wavs = vocal_wavs.to(self.device)
-                bgm_wavs = bgm_wavs.to(self.device)
-                if melody_is_wav:
-                    vocal_tokens, bgm_tokens = self.seperate_tokenizer.encode(vocal_wavs, bgm_wavs)
-                else:
-                    vocal_tokens = vocal_wavs
-                    bgm_tokens = bgm_wavs
-                assert len(vocal_tokens.shape) == len(bgm_tokens.shape) == 3, \
-                    f"vocal and bgm tokens should have a shape [B, C, T]! " \
-                    f"got vocal len={vocal_tokens.shape}, and bgm len={bgm_tokens.shape}"
-                assert vocal_tokens.shape[-1] == bgm_tokens.shape[-1], \
-                    f"vocal and bgm tokens should have the same length! " \
-                    f"got vocal len={vocal_tokens.shape[-1]}, and bgm len={bgm_tokens.shape[-1]}"
-                if bgm_tokens.shape[-1] > target_melody_token_len:
-                    bgm_tokens = bgm_tokens[...,:target_melody_token_len]
-                elif bgm_tokens.shape[-1] < target_melody_token_len:
-                    bgm_tokens = torch.cat([bgm_tokens, torch.full((1,1,target_melody_token_len - bgm_tokens.shape[-1]), 16385, device=self.device).long()], dim=-1)
-                if vocal_tokens.shape[-1] > target_melody_token_len:
-                    vocal_tokens = vocal_tokens[...,:target_melody_token_len]
-                elif vocal_tokens.shape[-1] < target_melody_token_len:
-                    vocal_tokens = torch.cat([vocal_tokens, torch.full((1,1,target_melody_token_len - vocal_tokens.shape[-1]), 16385, device=self.device).long()], dim=-1)
-            melody_tokens = torch.cat([melody_tokens, vocal_tokens, bgm_tokens], dim=1)
+                vocal_tokens = vocal_wavs
+                bgm_tokens = bgm_wavs
+            assert len(vocal_tokens.shape) == len(bgm_tokens.shape) == 3, \
+                f"vocal and bgm tokens should have a shape [B, C, T]! " \
+                f"got vocal len={vocal_tokens.shape}, and bgm len={bgm_tokens.shape}"
+            assert vocal_tokens.shape[-1] == bgm_tokens.shape[-1], \
+                f"vocal and bgm tokens should have the same length! " \
+                f"got vocal len={vocal_tokens.shape[-1]}, and bgm len={bgm_tokens.shape[-1]}"
+            if bgm_tokens.shape[-1] > target_melody_token_len:
+                bgm_tokens = bgm_tokens[...,:target_melody_token_len]
+            elif bgm_tokens.shape[-1] < target_melody_token_len:
+                bgm_tokens = torch.cat([bgm_tokens, torch.full((1,1,target_melody_token_len - bgm_tokens.shape[-1]), 16385, device=self.device).long()], dim=-1)
+            if vocal_tokens.shape[-1] > target_melody_token_len:
+                vocal_tokens = vocal_tokens[...,:target_melody_token_len]
+            elif vocal_tokens.shape[-1] < target_melody_token_len:
+                vocal_tokens = torch.cat([vocal_tokens, torch.full((1,1,target_melody_token_len - vocal_tokens.shape[-1]), 16385, device=self.device).long()], dim=-1)
+        melody_tokens = torch.cat([melody_tokens, vocal_tokens, bgm_tokens], dim=1)
         assert melody_tokens.shape[-1] == target_melody_token_len
         audio_qt_embs = melody_tokens.long()
         return texts, audio_qt_embs
@@ -284,7 +271,7 @@ class CodecLM:
         return gen_tokens
 
     @torch.no_grad()
-    def generate_audio(self, gen_tokens: torch.Tensor, prompt=None, vocal_prompt=None, bgm_prompt=None):
+    def generate_audio(self, gen_tokens: torch.Tensor, prompt=None, vocal_prompt=None, bgm_prompt=None, chunked=False):
         """Generate Audio from tokens"""
         assert gen_tokens.dim() == 3
         if self.seperate_tokenizer is not None:
@@ -292,7 +279,7 @@ class CodecLM:
             gen_tokens_vocal = gen_tokens[:, [1], :]
             gen_tokens_bgm = gen_tokens[:, [2], :]
             # gen_audio_song = self.audiotokenizer.decode(gen_tokens_song, prompt)
-            gen_audio_seperate = self.seperate_tokenizer.decode([gen_tokens_vocal, gen_tokens_bgm], vocal_prompt, bgm_prompt)
+            gen_audio_seperate = self.seperate_tokenizer.decode([gen_tokens_vocal, gen_tokens_bgm], vocal_prompt, bgm_prompt, chunked=chunked)
             return gen_audio_seperate
         else:
             gen_audio = self.audiotokenizer.decode(gen_tokens, prompt)

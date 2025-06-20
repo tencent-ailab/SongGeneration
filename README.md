@@ -59,6 +59,12 @@ Once everything is set up, you can run the inference script using the following 
 sh generate.sh ckpt_path lyrics.jsonl output_path
 ```
 
+If your GPU has less than 30GB or you encounter Out-of-Memory (OOM) errors, run the following command:
+
+```bash
+sh generate_lowmem.sh ckpt_path lyrics.jsonl output_path
+```
+
 - You may provides sample inputs in JSON Lines (`.jsonl`) format. Each line represents an individual song generation request. The model expects each input to contain the following fields:
 
   - `idx`: A unique identifier for the output song. It will be used as the name of the generated audio file.
@@ -77,7 +83,7 @@ sh generate.sh ckpt_path lyrics.jsonl output_path
 - An example command may look like:
   
   ```
-  sh generate.sh ckpt/songgeneration_base sample/lyrics.jsonl sample/output
+  sh generate_lowmem.sh ckpt/songgeneration_base sample/lyrics.jsonl sample/output
   ```
 
 ## Input Guide

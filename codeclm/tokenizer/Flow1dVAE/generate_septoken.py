@@ -173,7 +173,7 @@ class Tango:
         return codes_vocal, codes_bgm
 
     @torch.no_grad()
-    def code2sound(self, codes, prompt_vocal=None, prompt_bgm=None, duration=40, guidance_scale=1.5, num_steps=20, disable_progress=False):
+    def code2sound(self, codes, prompt_vocal=None, prompt_bgm=None, duration=40, guidance_scale=1.5, num_steps=20, disable_progress=False, chunked=False):
         codes_vocal,codes_bgm = codes
         codes_vocal = codes_vocal.to(self.device)
         codes_bgm = codes_bgm.to(self.device)
@@ -268,11 +268,12 @@ class Tango:
         min_samples =  int(min_samples * self.sample_rate // 1000 * 40)
         hop_samples = int(hop_samples * self.sample_rate // 1000 * 40)
         ovlp_samples = min_samples - hop_samples
+        torch.cuda.empty_cache()
         with torch.no_grad():
             output = None
             for i in range(len(latent_list)):
                 latent = latent_list[i]
-                cur_output = self.vae.decode_audio(latent)[0].detach().cpu()
+                cur_output = self.vae.decode_audio(latent, chunked=chunked)[0].detach().cpu()
 
                 if output is None:
                     output = cur_output
