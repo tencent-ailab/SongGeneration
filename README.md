@@ -25,18 +25,16 @@ We develop the SongGeneration model. It is an LM-based framework consisting of *
 
 ### Start from scatch
 
-You can install the necessary dependencies using the `requirements.txt` file with Python 3.8.12 and cuda-11.8:
+You can install the necessary dependencies using the `requirements.txt` file with Python>=3.8.12 and cuda>=11.8:
 
 ```bash
-yum install ffmpeg
-pip install -r requirements.txt --no-deps --extra-index-url https://download.pytorch.org/whl/cu118
+pip install -r requirements.txt --no-deps
 ```
 
-then install flash attention from wget
+then install flash attention from git. For example, if you're using Python 3.10 and CUDA 11.8
 
 ```bash
-wget https://github.com/Dao-AILab/flash-attention/releases/download/v2.6.3/flash_attn-2.6.3+cu118torch2.2cxx11abiFALSE-cp38-cp38-linux_x86_64.whl -P /home/
-pip install /home/flash_attn-2.6.3+cu118torch2.2cxx11abiFALSE-cp38-cp38-linux_x86_64.whl
+pip install https://github.com/Dao-AILab/flash-attention/releases/download/v2.6.3/flash_attn-2.6.3+cu118torch2.2cxx11abiFALSE-cp310-cp310-linux_x86_64.whl
 ```
 
 ### Start with docker
