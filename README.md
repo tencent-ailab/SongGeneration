@@ -46,6 +46,11 @@ docker pull juhayna/song-generation-levo:v0.1
 docker run -it --gpus all --network=host juhayna/song-generation-levo:v0.1 /bin/bash
 ```
 
+### Other deploy examples 
+
+ - Windows platform with ComfyUI: https://github.com/smthemex/ComfyUI_SongGeneration
+
+
 ## Inference
 
 To ensure the model runs correctly, **please download all the required folders** from the original source at [Hugging Face](https://huggingface.co/waytan22/SongGeneration).
@@ -151,6 +156,8 @@ The `descriptions` field allows you to control various musical attributes of the
 - **Avoid providing both `prompt_audio_path` and `descriptions` at the same time.**
   If both are present, and they convey conflicting information, the model may struggle to follow instructions accurately, resulting in degraded generation quality.
 - If `prompt_audio_path` is not provided, you can instead use `auto_prompt_audio_type` for automatic reference selection.
+
+
 
 ## Citation
 
