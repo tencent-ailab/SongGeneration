@@ -232,5 +232,5 @@ lyrics
 
 # 启动应用
 if __name__ == "__main__":
-    demo.launch(server_name="11.216.67.163", server_port=8081)
+    demo.launch(server_name="0.0.0.0", server_port=8081)
 
