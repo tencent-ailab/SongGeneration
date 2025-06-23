@@ -40,8 +40,8 @@ pip install https://github.com/Dao-AILab/flash-attention/releases/download/v2.6.
 ### Start with docker
 
 ```bash
-docker pull juhayna/song-generation-levo:v0.1
-docker run -it --gpus all --network=host juhayna/song-generation-levo:v0.1 /bin/bash
+docker pull juhayna/song-generation-levo:hf0613
+docker run -it --gpus all --network=host juhayna/song-generation-levo:hf0613 /bin/bash
 ```
 
 ### Other deploy examples 
@@ -156,6 +156,14 @@ The `descriptions` field allows you to control various musical attributes of the
 - If `prompt_audio_path` is not provided, you can instead use `auto_prompt_audio_type` for automatic reference selection.
 
 
+## Tools
+
+### Gradio UI
+You can start up the UI with the following command:
+
+```bash
+sh tools/gradio/run.sh ckpt_path
+```
 
 ## Citation
 
