@@ -7,6 +7,13 @@
 
 This repository is the official code repository for LeVo: High-Quality Song Generation with Multi-Preference Alignment. In this repository, we provide the SongGeneration model, inference scripts, and checkpoints trained on the Million Song Dataset that support both Chinese and English.
 
+## TODOs📋
+
+- [ ] Update full time model.
+- [ ] Update English enhanced model.
+- [ ] Update Low memory usage model.
+- [ ] Release finetuning scripts.
+
 ## Model Versions
 
 |          Model           |                         HuggingFace                          |
