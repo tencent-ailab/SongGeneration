@@ -35,13 +35,14 @@ We develop the SongGeneration model. It is an LM-based framework consisting of *
 You can install the necessary dependencies using the `requirements.txt` file with Python>=3.8.12 and CUDA>=11.8:
 
 ```bash
-pip install -r requirements.txt --no-deps
+pip install -r requirements.txt
+pip install -r requirements_nodeps.txt --no-deps
 ```
 
-Then install flash attention from git. For example, if you're using Python 3.10 and CUDA 11.8
+Then install flash attention from git. For example, if you're using Python 3.10 and CUDA 12.0
 
 ```bash
-pip install https://github.com/Dao-AILab/flash-attention/releases/download/v2.6.3/flash_attn-2.6.3+cu118torch2.2cxx11abiFALSE-cp310-cp310-linux_x86_64.whl
+pip install https://github.com/Dao-AILab/flash-attention/releases/download/v2.7.4.post1/flash_attn-2.7.4.post1+cu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl
 ```
 
 ### Start with docker
@@ -54,6 +55,7 @@ docker run -it --gpus all --network=host juhayna/song-generation-levo:hf0613 /bi
 ### Other deploy examples 
 
  - Windows platform with ComfyUI: https://github.com/smthemex/ComfyUI_SongGeneration
+ - Windows installer: http://bilibili.com/video/BV1ATK8zQE8L/?vd_source=22cfc54298226c4161b1aff457d17585
 
 
 ## Inference
