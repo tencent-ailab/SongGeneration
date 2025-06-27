@@ -174,17 +174,6 @@ You can start up the UI with the following command:
 sh tools/gradio/run.sh ckpt_path
 ```
 
-## Contact
-Use WeChat or QQ to scan blow QR code.
-
-<div align=center>
-<img src="img/contact.png" width=600 />
-</div>
-
-<div align=center>
-<img src="img/contactQQ.jpg" width=600 />
-</div>
-
 
 ## Citation
 
@@ -200,4 +189,13 @@ Use WeChat or QQ to scan blow QR code.
 ## License
 
 The code and weights in this repository is released in the [LICENSE](LICENSE)  file.
+
+
+## Contact
+Use WeChat or QQ to scan blow QR code.
+
+<div style="display: flex; justify-content: center; gap: 20px; width: 100%;">
+  <img src="img/contact.png" height="300" />
+  <img src="img/contactQQ.jpg" height="300" />
+</div>
 
