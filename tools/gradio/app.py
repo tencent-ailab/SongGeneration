@@ -117,8 +117,8 @@ def generate_song(lyric, description=None, prompt_audio=None, genre=None, cfg_co
 
 
 # 创建Gradio界面
-with gr.Blocks(title="SongGeration Demo Space") as demo:
-    gr.Markdown("# 🎵 SongGeration Demo Space")
+with gr.Blocks(title="SongGeneration Demo Space") as demo:
+    gr.Markdown("# 🎵 SongGeneration Demo Space")
     gr.Markdown("Demo interface for the song generation model. Provide a lyrics, and optionally an audio or text prompt, to generate a custom song.")
     
     with gr.Row():
