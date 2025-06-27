@@ -195,7 +195,7 @@ The code and weights in this repository is released in the [LICENSE](LICENSE)  f
 Use WeChat or QQ to scan blow QR code.
 
 <div style="display: flex; justify-content: center; gap: 20px; width: 100%;">
-  <img src="img/contact.png" height="300" />
+  <img src="img/contact.jpg" height="300" />
   <img src="img/contactQQ.jpg" height="300" />
 </div>
 
