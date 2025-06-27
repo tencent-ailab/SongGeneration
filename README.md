@@ -178,11 +178,11 @@ sh tools/gradio/run.sh ckpt_path
 Use WeChat or QQ to scan blow QR code.
 
 <div align=center>
-<img src="img/contact.png" width=600 height=450 />
+<img src="img/contact.png" width=600 />
 </div>
 
 <div align=center>
-<img src="img/contactQQ.png" width=600 height=450 />
+<img src="img/contactQQ.jpg" width=600 />
 </div>
 
 
