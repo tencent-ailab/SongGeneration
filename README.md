@@ -56,7 +56,7 @@ docker run -it --gpus all --network=host juhayna/song-generation-levo:hf0613 /bi
 
  - Windows platform with ComfyUI: https://github.com/smthemex/ComfyUI_SongGeneration
  - Windows installer: http://bilibili.com/video/BV1ATK8zQE8L/?vd_source=22cfc54298226c4161b1aff457d17585
-
+ - Quick start with ComfyUI on CNB: https://cnb.cool/tencent/tencent-ailab/examples/SongGeneration-comfyui
 
 ## Inference
 
