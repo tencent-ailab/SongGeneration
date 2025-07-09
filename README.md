@@ -30,7 +30,7 @@ We develop the SongGeneration model. It is an LM-based framework consisting of *
 
 ## Installation
 
-### Start from scatch
+### Start from scratch
 
 You can install the necessary dependencies using the `requirements.txt` file with Python>=3.8.12 and CUDA>=11.8:
 
