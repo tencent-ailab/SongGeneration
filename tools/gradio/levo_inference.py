@@ -62,7 +62,7 @@ class LeVoInference(torch.nn.Module):
 
         self.model.set_generation_params(**self.default_params)
 
-    def forward(self, lyric: str, description: str = None, prompt_audio_path: os.PathLike = None, genre: str = None, auto_prompt_path: os.PathLike = None, params = dict()):
+    def forward(self, lyric: str, description: str = None, prompt_audio_path: os.PathLike = None, genre: str = None, auto_prompt_path: os.PathLike = None, gen_type: str = "all", params = dict()):
         params = {**self.default_params, **params}
         self.model.set_generation_params(**params)
 
@@ -97,14 +97,11 @@ class LeVoInference(torch.nn.Module):
 
         with torch.autocast(device_type="cuda", dtype=torch.float16):
             tokens = self.model.generate(**generate_inp, return_tokens=True)
-
-        if tokens.shape[-1] > 3000:
-            tokens = tokens[..., :3000]
             
         with torch.no_grad():
             if melody_is_wav:
-                wav_seperate = self.model.generate_audio(tokens, pmt_wav, vocal_wav, bgm_wav)
+                wav_seperate = self.model.generate_audio(tokens, pmt_wav, vocal_wav, bgm_wav, gen_type=gen_type)
             else:
-                wav_seperate = self.model.generate_audio(tokens)
+                wav_seperate = self.model.generate_audio(tokens, gen_type=gen_type)
 
         return wav_seperate[0]

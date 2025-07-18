@@ -49,7 +49,7 @@ with open(op.join(APP_DIR, 'conf/vocab.yaml'), 'r', encoding='utf-8') as file:
     STRUCTS = yaml.safe_load(file)
 
 
-def generate_song(lyric, description=None, prompt_audio=None, genre=None, cfg_coef=None, temperature=None, top_k=None, progress=gr.Progress(track_tqdm=True)):
+def generate_song(lyric, description=None, prompt_audio=None, genre=None, cfg_coef=None, temperature=None, top_k=None, gen_type="all", progress=gr.Progress(track_tqdm=True)):
     global MODEL
     global STRUCTS
     params = {'cfg_coef':cfg_coef, 'temperature':temperature, 'top_k':top_k}
@@ -98,7 +98,7 @@ def generate_song(lyric, description=None, prompt_audio=None, genre=None, cfg_co
     progress(0.0, "Start Generation")
     start = time.time()
     
-    audio_data = MODEL(lyric_norm, description, prompt_audio, genre, op.join(APP_DIR, "ckpt/prompt.pt"), params).cpu().permute(1, 0).float().numpy()
+    audio_data = MODEL(lyric_norm, description, prompt_audio, genre, op.join(APP_DIR, "ckpt/prompt.pt"), gen_type, params).cpu().permute(1, 0).float().numpy()
 
     end = time.time()
     
@@ -119,7 +119,7 @@ def generate_song(lyric, description=None, prompt_audio=None, genre=None, cfg_co
 # 创建Gradio界面
 with gr.Blocks(title="SongGeneration Demo Space") as demo:
     gr.Markdown("# 🎵 SongGeneration Demo Space")
-    gr.Markdown("Demo interface for the song generation model. Provide a lyrics, and optionally an audio or text prompt, to generate a custom song.")
+    gr.Markdown("Demo interface for the song generation model. Provide a lyrics, and optionally an audio or text prompt, to generate a custom song. The code is in [GIT](https://github.com/tencent-ailab/SongGeneration)")
     
     with gr.Row():
         with gr.Column():
@@ -197,7 +197,9 @@ lyrics
                     interactive=True,
                     elem_id="top_k",
                 )
-            generate_btn = gr.Button("Generate Song", variant="primary")
+            with gr.Row():
+                generate_btn = gr.Button("Generate Song", variant="primary")
+                generate_bgm_btn = gr.Button("Generate Pure Music", variant="primary")
         
         with gr.Column():
             output_audio = gr.Audio(label="Generated Song", type="numpy")
@@ -226,6 +228,11 @@ lyrics
     generate_btn.click(
         fn=generate_song,
         inputs=[lyric, description, prompt_audio, genre, cfg_coef, temperature, top_k],
+        outputs=[output_audio, output_json]
+    )
+    generate_bgm_btn.click(
+        fn=generate_song,
+        inputs=[lyric, description, prompt_audio, genre, cfg_coef, temperature, top_k, gr.State("bgm")],
         outputs=[output_audio, output_json]
     )
     

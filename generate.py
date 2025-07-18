@@ -70,6 +70,7 @@ if __name__ == "__main__":
     ckpt_path = sys.argv[1]
     input_jsonl = sys.argv[2]
     save_dir = sys.argv[3]
+    gen_type = sys.argv[4] if len(sys.argv) > 4 else "all"
     cfg_path = os.path.join(ckpt_path, 'config.yaml')
     ckpt_path = os.path.join(ckpt_path, 'model.pt')
     cfg = OmegaConf.load(cfg_path)
@@ -146,15 +147,15 @@ if __name__ == "__main__":
         with torch.autocast(device_type="cuda", dtype=torch.float16):
             tokens = model.generate(**generate_inp, return_tokens=True)
         mid_time = time.time()
-            
+        
         with torch.no_grad():
             if melody_is_wav:   
-                wav_seperate = model.generate_audio(tokens, pmt_wav, vocal_wav, bgm_wav)
+                wav_seperate = model.generate_audio(tokens, pmt_wav, vocal_wav, bgm_wav, gen_type=gen_type)
             else:
-                wav_seperate = model.generate_audio(tokens)
+                wav_seperate = model.generate_audio(tokens, gen_type=gen_type)
         end_time = time.time()
         torchaudio.save(target_wav_name, wav_seperate[0].cpu().float(), cfg.sample_rate)
-        print(f"process{item['idx']}, lm cost {mid_time - start_time}s, diffusion cost {end_time - mid_time}")
+        print(f"process{item['idx']} {gen_type}, lm cost {mid_time - start_time}s, diffusion cost {end_time - mid_time}")
 
         item["idx"] = f"{item['idx']}"
         item["wav_path"] = target_wav_name

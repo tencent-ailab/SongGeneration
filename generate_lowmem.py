@@ -71,6 +71,7 @@ if __name__ == "__main__":
     ckpt_path = sys.argv[1]
     input_jsonl = sys.argv[2]
     save_dir = sys.argv[3]
+    gen_type = sys.argv[4] if len(sys.argv) > 4 else "all"
     cfg_path = os.path.join(ckpt_path, 'config.yaml')
     ckpt_path = os.path.join(ckpt_path, 'model.pt')
     cfg = OmegaConf.load(cfg_path)
@@ -220,12 +221,12 @@ if __name__ == "__main__":
     for item in new_items:
         with torch.no_grad():
             if 'raw_pmt_wav' in item:   
-                wav_seperate = model.generate_audio(item['tokens'], item['raw_pmt_wav'], item['raw_vocal_wav'], item['raw_bgm_wav'], chunked=True)
+                wav_seperate = model.generate_audio(item['tokens'], item['raw_pmt_wav'], item['raw_vocal_wav'], item['raw_bgm_wav'], chunked=True, gen_type=gen_type)
                 del item['raw_pmt_wav']
                 del item['raw_vocal_wav']
                 del item['raw_bgm_wav']
             else:
-                wav_seperate = model.generate_audio(item['tokens'], chunked=True)
+                wav_seperate = model.generate_audio(item['tokens'], chunked=True, gen_type=gen_type)
         torchaudio.save(item['wav_path'], wav_seperate[0].cpu().float(), cfg.sample_rate)
         del item['tokens']
         del item['pmt_wav']

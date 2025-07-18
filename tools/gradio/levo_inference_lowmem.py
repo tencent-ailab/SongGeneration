@@ -40,7 +40,7 @@ class LeVoInference(torch.nn.Module):
         )
 
 
-    def forward(self, lyric: str, description: str = None, prompt_audio_path: os.PathLike = None, genre: str = None, auto_prompt_path: os.PathLike = None, params = dict()):
+    def forward(self, lyric: str, description: str = None, prompt_audio_path: os.PathLike = None, genre: str = None, auto_prompt_path: os.PathLike = None, gen_type: str = "all", params = dict()):
         if prompt_audio_path is not None and os.path.exists(prompt_audio_path):
             separator = Separator()
             audio_tokenizer = builders.get_audio_tokenizer_model(self.cfg.audio_tokenizer_checkpoint, self.cfg)
@@ -112,15 +112,12 @@ class LeVoInference(torch.nn.Module):
             max_duration = self.max_duration,
             seperate_tokenizer = seperate_tokenizer,
         )
-
-        if tokens.shape[-1] > 3000:
-            tokens = tokens[..., :3000]
             
         with torch.no_grad():
             if melody_is_wav:
-                wav_seperate = model.generate_audio(tokens, pmt_wav, vocal_wav, bgm_wav)
+                wav_seperate = model.generate_audio(tokens, pmt_wav, vocal_wav, bgm_wav, gen_type=gen_type)
             else:
-                wav_seperate = model.generate_audio(tokens)
+                wav_seperate = model.generate_audio(tokens, gen_type=gen_type)
 
         del seperate_tokenizer
         del model

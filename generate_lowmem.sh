@@ -7,4 +7,5 @@ export PYTHONPATH="$(pwd)/codeclm/tokenizer/":"$(pwd)":"$(pwd)/codeclm/tokenizer
 CKPT_PATH=$1
 JSONL=$2
 SAVE_DIR=$3
-python3 generate_lowmem.py $CKPT_PATH $JSONL $SAVE_DIR
+GEN_TYEP=$4
+python3 generate_lowmem.py $CKPT_PATH $JSONL $SAVE_DIR $GEN_TYEP

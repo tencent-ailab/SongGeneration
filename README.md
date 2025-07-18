@@ -7,12 +7,18 @@
 
 This repository is the official code repository for LeVo: High-Quality Song Generation with Multi-Preference Alignment. In this repository, we provide the SongGeneration model, inference scripts, and checkpoints trained on the Million Song Dataset that support both Chinese and English.
 
+## News and Updates
+
+* **2025.07.18 🔥**: Now SongGeneration supports pure music generation.
+* **2025.06.16 🔥**: We have released the **SongGeneration** series.
+
 ## TODOs📋
 
 - [ ] Update full time model.
 - [ ] Update English enhanced model.
 - [ ] Update Low memory usage model.
 - [ ] Release finetuning scripts.
+- [x] Support single vocal/bgm track generation.
 
 ## Model Versions
 
@@ -68,13 +74,13 @@ To ensure the model runs correctly, **please download all the required folders**
 Once everything is set up, you can run the inference script using the following command:
 
 ```bash
-sh generate.sh ckpt_path lyrics.jsonl output_path
+sh generate.sh ckpt_path lyrics.jsonl output_path gen_type
 ```
 
 If your GPU has less than 30GB or you encounter Out-of-Memory (OOM) errors, run the following command:
 
 ```bash
-sh generate_lowmem.sh ckpt_path lyrics.jsonl output_path
+sh generate_lowmem.sh ckpt_path lyrics.jsonl output_path gen_type
 ```
 
 - You may provides sample inputs in JSON Lines (`.jsonl`) format. Each line represents an individual song generation request. The model expects each input to contain the following fields:
@@ -91,7 +97,12 @@ sh generate_lowmem.sh ckpt_path lyrics.jsonl output_path
 - Outputs of the loader `output_path`:
   - `audio`: generated audio files
   - `jsonl`: output jsonls
-  
+
+- The parameter description of `gen_type`:
+  - `bgm`: generate pure music
+  - `vocal`: generate a cappella
+  - `all`: generate complete song
+
 - An example command may look like:
   
   ```
@@ -173,7 +184,6 @@ You can start up the UI with the following command:
 ```bash
 sh tools/gradio/run.sh ckpt_path
 ```
-
 
 ## Citation
 
