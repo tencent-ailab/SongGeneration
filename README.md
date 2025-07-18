@@ -101,7 +101,7 @@ sh generate_lowmem.sh ckpt_path lyrics.jsonl output_path gen_type
 - The parameter description of `gen_type`:
   - `bgm`: generate pure music
   - `vocal`: generate a cappella
-  - `all`: generate complete song
+  - left blank: generate complete song
 
 - An example command may look like:
   

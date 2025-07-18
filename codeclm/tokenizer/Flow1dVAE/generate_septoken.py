@@ -188,7 +188,7 @@ class Tango:
         first_latent_codes_length = 0
 
 
-        if(isinstance(prompt_vocal, torch.Tensor)):
+        if (isinstance(prompt_vocal, torch.Tensor)) and (isinstance(prompt_bgm, torch.Tensor)):
             # prepare prompt
             prompt_vocal = prompt_vocal.to(self.device)
             prompt_bgm = prompt_bgm.to(self.device)
