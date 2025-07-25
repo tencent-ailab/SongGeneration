@@ -78,7 +78,8 @@ class AudioTokenizer(ABC, nn.Module):
             vae_config: str,
             vae_model: str,
             device: tp.Union[torch.device, str] = 'cpu', 
-            mode='extract'
+            mode='extract',
+            tango_device:str='cuda'
             ) -> 'AudioTokenizer':
         """Instantiate a AudioTokenizer model from a given pretrained model.
 
@@ -91,11 +92,11 @@ class AudioTokenizer(ABC, nn.Module):
         if name.split('_')[0] == 'Flow1dVAESeparate':
             model_type = name.split('_', 1)[1]
             logger.info("Getting pretrained compression model from semantic model %s", model_type)
-            model = Flow1dVAESeparate(model_type, vae_config, vae_model)
+            model = Flow1dVAESeparate(model_type, vae_config, vae_model, tango_device=tango_device)
         elif name.split('_')[0] == 'Flow1dVAE1rvq':
             model_type = name.split('_', 1)[1]
             logger.info("Getting pretrained compression model from semantic model %s", model_type)
-            model = Flow1dVAE1rvq(model_type, vae_config, vae_model)
+            model = Flow1dVAE1rvq(model_type, vae_config, vae_model, tango_device=tango_device)
         else:
             raise NotImplementedError("{} is not implemented in models/audio_tokenizer.py".format(
                 name))
@@ -108,12 +109,13 @@ class Flow1dVAE1rvq(AudioTokenizer):
         model_type: str = "model_2_fixed.safetensors",
         vae_config: str = "",
         vae_model: str = "",
+        tango_device: str = "cuda"
         ):
         super().__init__()
 
         from codeclm.tokenizer.Flow1dVAE.generate_1rvq import Tango
         model_path = model_type
-        self.model = Tango(model_path=model_path, vae_config=vae_config, vae_model=vae_model, device='cuda')
+        self.model = Tango(model_path=model_path, vae_config=vae_config, vae_model=vae_model, device=tango_device)
         print ("Successfully loaded checkpoint from:", model_path)
 
             
@@ -176,6 +178,15 @@ class Flow1dVAE1rvq(AudioTokenizer):
         assert n <= self.total_codebooks
         self.n_quantizers = n
 
+    def to(self, device=None, dtype=None, non_blocking=False):
+        self = super(Flow1dVAE1rvq, self).to(device, dtype, non_blocking)
+        self.model = self.model.to(device, dtype, non_blocking)
+        return self
+    
+    def cuda(self, device=None):
+        if device is None:
+            device = 'cuda:0'
+        return super(Flow1dVAE1rvq, self).cuda(device)
 
 class Flow1dVAESeparate(AudioTokenizer):
     def __init__(
@@ -183,12 +194,13 @@ class Flow1dVAESeparate(AudioTokenizer):
         model_type: str = "model_2.safetensors",
         vae_config: str = "",
         vae_model: str = "",
+        tango_device: str = "cuda"
         ):
         super().__init__()
 
         from codeclm.tokenizer.Flow1dVAE.generate_septoken import Tango
         model_path = model_type
-        self.model = Tango(model_path=model_path, vae_config=vae_config, vae_model=vae_model, device='cuda')
+        self.model = Tango(model_path=model_path, vae_config=vae_config, vae_model=vae_model, device=tango_device)
         print ("Successfully loaded checkpoint from:", model_path)
 
             
@@ -208,9 +220,9 @@ class Flow1dVAESeparate(AudioTokenizer):
         return codes_vocal, codes_bgm
     
     @torch.no_grad()    
-    def decode(self, codes: torch.Tensor, prompt_vocal = None, prompt_bgm = None, chunked=False):
+    def decode(self, codes: torch.Tensor, prompt_vocal = None, prompt_bgm = None, chunked=False, chunk_size=128):
         wav = self.model.code2sound(codes, prompt_vocal=prompt_vocal, prompt_bgm=prompt_bgm, guidance_scale=1.5, 
-                                    num_steps=50, disable_progress=False, chunked=chunked) # [B,N,T] -> [B,T]
+                                    num_steps=50, disable_progress=False, chunked=chunked, chunk_size=chunk_size) # [B,N,T] -> [B,T]
         return wav[None]
 
     
@@ -251,3 +263,14 @@ class Flow1dVAESeparate(AudioTokenizer):
         assert n >= 1
         assert n <= self.total_codebooks
         self.n_quantizers = n
+
+    def to(self, device=None, dtype=None, non_blocking=False):
+        self = super(Flow1dVAESeparate, self).to(device, dtype, non_blocking)
+        self.model = self.model.to(device, dtype, non_blocking)
+        return self
+
+    def cuda(self, device=None):
+        if device is None:
+            device = 'cuda:0'
+        self = super(Flow1dVAESeparate, self).cuda(device)
+        return self

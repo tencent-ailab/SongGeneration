@@ -102,7 +102,6 @@ class Tango:
         
         self.model.eval()
         self.model.init_device_dtype(torch.device(device), torch.float32)
-        print("scaling factor: ", self.model.normfeat.std)
         
         # self.scheduler = DDIMScheduler.from_pretrained( \
         #     scheduler_name, subfolder="scheduler")
@@ -173,7 +172,7 @@ class Tango:
         return codes_vocal, codes_bgm
 
     @torch.no_grad()
-    def code2sound(self, codes, prompt_vocal=None, prompt_bgm=None, duration=40, guidance_scale=1.5, num_steps=20, disable_progress=False, chunked=False):
+    def code2sound(self, codes, prompt_vocal=None, prompt_bgm=None, duration=40, guidance_scale=1.5, num_steps=20, disable_progress=False, chunked=False, chunk_size=128):
         codes_vocal,codes_bgm = codes
         codes_vocal = codes_vocal.to(self.device)
         codes_bgm = codes_bgm.to(self.device)
@@ -188,7 +187,7 @@ class Tango:
         first_latent_codes_length = 0
 
 
-        if (isinstance(prompt_vocal, torch.Tensor)) and (isinstance(prompt_bgm, torch.Tensor)):
+        if(isinstance(prompt_vocal, torch.Tensor) and isinstance(prompt_bgm, torch.Tensor)):
             # prepare prompt
             prompt_vocal = prompt_vocal.to(self.device)
             prompt_bgm = prompt_bgm.to(self.device)
@@ -273,7 +272,7 @@ class Tango:
             output = None
             for i in range(len(latent_list)):
                 latent = latent_list[i]
-                cur_output = self.vae.decode_audio(latent, chunked=chunked)[0].detach().cpu()
+                cur_output = self.vae.decode_audio(latent, chunked=chunked, chunk_size=chunk_size)[0].detach().cpu()
 
                 if output is None:
                     output = cur_output
@@ -301,3 +300,11 @@ class Tango:
         codes=[codes_vocal, codes_bgm]
         wave = self.code2sound(codes, prompt_vocal,prompt_bgm, guidance_scale=1.5, num_steps=steps, disable_progress=disable_progress)
         return wave
+    
+    def to(self, device=None, dtype=None, non_blocking=False):
+        if device is not None:
+            self.device = device
+            self.model.device = device
+        self.vae = self.vae.to(device, dtype, non_blocking)
+        self.model = self.model.to(device, dtype, non_blocking)
+        return self

@@ -46,7 +46,6 @@ class Tango:
         
         self.model.eval()
         self.model.init_device_dtype(torch.device(device), torch.float32)
-        print("scaling factor: ", self.model.normfeat.std)
         
         # self.scheduler = DDIMScheduler.from_pretrained( \
         #     scheduler_name, subfolder="scheduler")
@@ -281,3 +280,11 @@ class Tango:
             else:
                 output = torch.cat([output, cur_output], -1)
         return output
+
+    def to(self, device=None, dtype=None, non_blocking=False):
+        if device is not None:
+            self.device = device
+            self.model.device = device
+        self.vae = self.vae.to(device, dtype, non_blocking)
+        self.model = self.model.to(device, dtype, non_blocking)
+        return self

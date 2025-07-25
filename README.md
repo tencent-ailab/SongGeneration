@@ -9,15 +9,16 @@ This repository is the official code repository for LeVo: High-Quality Song Gene
 
 ## News and Updates
 
-* **2025.07.18 🔥**: Now SongGeneration supports pure music generation.
+* **2025.07.25 🔥**: SongGeneration can now run with as little as **10GB of GPU memory**.
+* **2025.07.18 🔥**: SongGeneration now supports generation of **pure music**, **pure vocals**, and **dual-track (vocals + accompaniment separately)** outputs.
 * **2025.06.16 🔥**: We have released the **SongGeneration** series.
 
 ## TODOs📋
 
 - [ ] Update full time model.
 - [ ] Update English enhanced model.
-- [ ] Update Low memory usage model.
 - [ ] Release finetuning scripts.
+- [x] Update Low memory usage model.
 - [x] Support single vocal/bgm track generation.
 
 ## Model Versions
@@ -74,13 +75,7 @@ To ensure the model runs correctly, **please download all the required folders**
 Once everything is set up, you can run the inference script using the following command:
 
 ```bash
-sh generate.sh ckpt_path lyrics.jsonl output_path gen_type
-```
-
-If your GPU has less than 30GB or you encounter Out-of-Memory (OOM) errors, run the following command:
-
-```bash
-sh generate_lowmem.sh ckpt_path lyrics.jsonl output_path gen_type
+sh generate.sh ckpt_path lyrics.jsonl output_path
 ```
 
 - You may provides sample inputs in JSON Lines (`.jsonl`) format. Each line represents an individual song generation request. The model expects each input to contain the following fields:
@@ -98,16 +93,39 @@ sh generate_lowmem.sh ckpt_path lyrics.jsonl output_path gen_type
   - `audio`: generated audio files
   - `jsonl`: output jsonls
 
-- The parameter description of `gen_type`:
-  - `bgm`: generate pure music
-  - `vocal`: generate a cappella
-  - left blank: generate complete song
-
 - An example command may look like:
-  
+
+  ```bash
+  sh generate.sh ckpt/songgeneration_base sample/lyrics.jsonl sample/output
   ```
-  sh generate_lowmem.sh ckpt/songgeneration_base sample/lyrics.jsonl sample/output
-  ```
+
+If you encounter **out-of-memory (OOM**) issues, you can manually enable low-memory inference mode using the `--low_mem` flag. For example:
+
+```bash
+sh generate.sh ckpt_path lyrics.jsonl output_path --low_mem
+```
+
+**Note:** Minimum GPU memory requirements for each model are as follows:
+
+- `SongGeneration-base`: **10GB** without `prompt_audio_path`, **16GB** with `prompt_audio_path` provided.
+
+If your GPU device does **not support Flash Attention** or your environment does **not have Flash Attention installed**, you can disable it by adding the `--not_use_flash_attn` flag. For example:
+
+```bash
+sh generate.sh ckpt_path lyrics.jsonl output_path --not_use_flash_attn
+```
+
+By default, the model generates **songs with both vocals and accompaniment**. If you want to generate **pure music**, **pure vocals**, or **separated vocal and accompaniment tracks**, please use the following flags:
+
+- `--bgm`  Generate **pure music**
+- `--vocal` Generate **vocal-only (a cappella)**
+- `--separate` Generate **separated vocal and accompaniment tracks**
+
+For example:
+
+```bash
+sh generate.sh ckpt_path lyrics.jsonl output_path --separate
+```
 
 ## Input Guide
 
@@ -208,4 +226,3 @@ Use WeChat or QQ to scan blow QR code.
   <img src="img/contact.jpg" height="300" />
   <img src="img/contactQQ.jpg" height="300" />
 </div>
-

@@ -29,13 +29,29 @@ def get_audio_tokenizer_model(checkpoint_path: str, cfg: omegaconf.DictConfig):
         return None
     if checkpoint_path.startswith('//pretrained/'):
         name = checkpoint_path.split('/', 3)[-1]
-        return AudioTokenizer.get_pretrained(name, cfg.vae_config, cfg.vae_model, 'cpu', mode=cfg.mode)
+        return AudioTokenizer.get_pretrained(name, cfg.vae_config, cfg.vae_model, 'cuda', mode=cfg.mode)
     elif checkpoint_path == "":
         return None
     else:
         name = checkpoint_path
-        return AudioTokenizer.get_pretrained(name, cfg.vae_config, cfg.vae_model, 'cpu', mode=cfg.mode)
+        return AudioTokenizer.get_pretrained(name, cfg.vae_config, cfg.vae_model, 'cuda', mode=cfg.mode)
     
+
+def get_audio_tokenizer_model_cpu(checkpoint_path: str, cfg: omegaconf.DictConfig):
+    from codeclm.tokenizer.audio_tokenizer import AudioTokenizer
+    """Instantiate a compression model."""
+    if checkpoint_path is None:
+        return None
+    if checkpoint_path.startswith('//pretrained/'):
+        name = checkpoint_path.split('/', 3)[-1]
+        return AudioTokenizer.get_pretrained(name, cfg.vae_config, cfg.vae_model, 'cpu', mode=cfg.mode, tango_device='cpu')
+    elif checkpoint_path == "":
+        return None
+    else:
+        name = checkpoint_path
+        return AudioTokenizer.get_pretrained(name, cfg.vae_config, cfg.vae_model, 'cpu', mode=cfg.mode, tango_device='cpu')
+
+
 def get_lm_model(cfg: omegaconf.DictConfig): #-> LMModel:
     """Instantiate a LM."""    
     lm_kwargs = dict_from_config(getattr(cfg, 'lm'))

@@ -78,7 +78,6 @@ class MusicFM25Hz(nn.Module):
             with open(stat_path, "r") as f:
                 self.stat = json.load(f)
         else:
-            print("No stats file found at `{}`, use default from msd.".format(stat_path))
             self.stat = {"spec_256_cnt": 14394344256, "spec_256_mean": -23.34296658431829, "spec_256_std": 26.189295587132637, "spec_512_cnt": 28677104448, "spec_512_mean": -21.31267396860235, "spec_512_std": 26.52644536245769, "spec_1024_cnt": 57242624832, "spec_1024_mean": -18.852271129208273, "spec_1024_std": 26.443154583585663, "spec_2048_cnt": 114373665600, "spec_2048_mean": -15.638743433896792, "spec_2048_std": 26.115825961611545, "spec_4096_cnt": 228635747136, "spec_4096_mean": -11.715532502794836, "spec_4096_std": 25.763972210234062, "melspec_256_cnt": 14282760192, "melspec_256_mean": -26.962600400166156, "melspec_256_std": 36.13614100912126, "melspec_512_cnt": 14282760192, "melspec_512_mean": -9.108344167718862, "melspec_512_std": 24.71910937988429, "melspec_1024_cnt": 14282760192, "melspec_1024_mean": 0.37302579246531126, "melspec_1024_std": 18.684082325919388, "melspec_2048_cnt": 14282760192, "melspec_2048_mean": 6.768444971712967, "melspec_2048_std": 18.417922652295623, "melspec_4096_cnt": 14282760192, "melspec_4096_mean": 13.617164614990036, "melspec_4096_std": 18.08552130124525, "cqt_cnt": 9373061376, "cqt_mean": 0.46341379757927165, "cqt_std": 0.9543998080910191, "mfcc_256_cnt": 1339008768, "mfcc_256_mean": -11.681755459447485, "mfcc_256_std": 29.183186444668316, "mfcc_512_cnt": 1339008768, "mfcc_512_mean": -2.540581461792183, "mfcc_512_std": 31.93752185832081, "mfcc_1024_cnt": 1339008768, "mfcc_1024_mean": 6.606636263169779, "mfcc_1024_std": 34.151644801729624, "mfcc_2048_cnt": 1339008768, "mfcc_2048_mean": 5.281600844245184, "mfcc_2048_std": 33.12784541220003, "mfcc_4096_cnt": 1339008768, "mfcc_4096_mean": 4.7616569480166095, "mfcc_4096_std": 32.61458906894133, "chromagram_256_cnt": 1339008768, "chromagram_256_mean": 55.15596556703181, "chromagram_256_std": 73.91858278719991, "chromagram_512_cnt": 1339008768, "chromagram_512_mean": 175.73092252759895, "chromagram_512_std": 248.48485148525953, "chromagram_1024_cnt": 1339008768, "chromagram_1024_mean": 589.2947481634608, "chromagram_1024_std": 913.857929063196, "chromagram_2048_cnt": 1339008768, "chromagram_2048_mean": 2062.286388327397, "chromagram_2048_std": 3458.92657915397, "chromagram_4096_cnt": 1339008768, "chromagram_4096_mean": 7673.039107997085, "chromagram_4096_std": 13009.883158267234}
 
         # feature extractor
@@ -90,40 +89,6 @@ class MusicFM25Hz(nn.Module):
         self.use_rvq_target = use_rvq_target
         
         seed = 142
-        if use_rvq_target:
-            try:
-                from .rvq_musicfm import ResidualVectorQuantize
-                
-            except:
-                import sys, os
-                sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-                from rvq_musicfm import ResidualVectorQuantize
-    
-            self.rvq = ResidualVectorQuantize(
-                input_dim = 128*4, 
-                n_codebooks = 8, 
-                codebook_size = 1024, 
-                codebook_dim = 16, 
-                quantizer_dropout = 0.0,
-                )
-            import os
-            if rvq_ckpt_path is not None and os.path.exists(rvq_ckpt_path):
-                state_dict = torch.load(rvq_ckpt_path, map_location="cpu")
-                self.rvq.load_state_dict(state_dict)
-            else:
-                print(f'Checkpoint for rvq `{rvq_ckpt_path}` not found. Using random initialization.')
-
-        else:
-            for feature in self.features:
-                for i in range(num_codebooks):
-                    setattr(
-                        self,
-                        f"quantizer_{feature}", # _{i}
-                        RandomProjectionQuantizer(
-                            n_mels * 4, codebook_dim, codebook_size, seed=seed + i
-                        ),
-                    )
-
         # two residual convolution layers + one projection layer
         self.conv = Conv2dSubsampling(
             1, conv_dim, encoder_dim, strides=[2, 2], n_bands=n_mels
@@ -247,16 +212,8 @@ class MusicFM25Hz(nn.Module):
     @torch.no_grad()
     def tokenize(self, x):
         out = {}
-        for key in x.keys():
-            if self.use_rvq_target:
-                self.rvq.eval()
-                quantized_prompt_embeds, codes, _, commitment_loss, codebook_loss, rvq_usage = self.rvq(x[key].permute((0, 2, 1)))
-                out[key] = torch.cat([codes[:, idx, :] for idx in range(int(self.codebook_size//1024))], dim=-1)
-            else:
-                layer = getattr(self, "quantizer_%s" % key)
-                out[key] = layer(x[key])
-        return out
-
+        raise NotImplementedError("tokenize is not implemented")
+        
     def get_targets(self, x):
         x = self.preprocessing(x, features=self.features) # -> {'melspec_2048': Tensor{Size([3, 128, 3000]) cuda:0 f32}}
         x = self.normalize(x)
