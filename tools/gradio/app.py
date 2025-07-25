@@ -49,7 +49,7 @@ with open(op.join(APP_DIR, 'conf/vocab.yaml'), 'r', encoding='utf-8') as file:
     STRUCTS = yaml.safe_load(file)
 
 
-def generate_song(lyric, description=None, prompt_audio=None, genre=None, cfg_coef=None, temperature=None, top_k=None, gen_type="all", progress=gr.Progress(track_tqdm=True)):
+def generate_song(lyric, description=None, prompt_audio=None, genre=None, cfg_coef=None, temperature=None, top_k=None, gen_type="mixed", progress=gr.Progress(track_tqdm=True)):
     global MODEL
     global STRUCTS
     params = {'cfg_coef':cfg_coef, 'temperature':temperature, 'top_k':top_k}
@@ -240,4 +240,3 @@ lyrics
 # 启动应用
 if __name__ == "__main__":
     demo.launch(server_name="0.0.0.0", server_port=8081)
-

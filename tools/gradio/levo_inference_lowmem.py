@@ -40,7 +40,7 @@ class LeVoInference(torch.nn.Module):
         )
 
 
-    def forward(self, lyric: str, description: str = None, prompt_audio_path: os.PathLike = None, genre: str = None, auto_prompt_path: os.PathLike = None, gen_type: str = "all", params = dict()):
+    def forward(self, lyric: str, description: str = None, prompt_audio_path: os.PathLike = None, genre: str = None, auto_prompt_path: os.PathLike = None, gen_type: str = "mixed", params = dict()):
         if prompt_audio_path is not None and os.path.exists(prompt_audio_path):
             separator = Separator()
             audio_tokenizer = builders.get_audio_tokenizer_model(self.cfg.audio_tokenizer_checkpoint, self.cfg)

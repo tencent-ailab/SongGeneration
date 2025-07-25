@@ -62,7 +62,7 @@ class LeVoInference(torch.nn.Module):
 
         self.model.set_generation_params(**self.default_params)
 
-    def forward(self, lyric: str, description: str = None, prompt_audio_path: os.PathLike = None, genre: str = None, auto_prompt_path: os.PathLike = None, gen_type: str = "all", params = dict()):
+    def forward(self, lyric: str, description: str = None, prompt_audio_path: os.PathLike = None, genre: str = None, auto_prompt_path: os.PathLike = None, gen_type: str = "mixed", params = dict()):
         params = {**self.default_params, **params}
         self.model.set_generation_params(**params)
 
