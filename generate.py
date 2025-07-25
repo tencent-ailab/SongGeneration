@@ -99,7 +99,7 @@ def generate(args):
     audio_tokenizer = builders.get_audio_tokenizer_model(cfg.audio_tokenizer_checkpoint, cfg)
     audio_tokenizer = audio_tokenizer.eval().cuda()
     merge_prompt = [item for sublist in auto_prompt.values() for item in sublist]
-    with open(input_jsonl, "r") as fp:
+    with open(input_jsonl, encoding="utf-8") as fp:
         lines = fp.readlines()
 
         
@@ -293,7 +293,7 @@ def generate_lowmem(args):
     gen_type = args.generate_type
     chunk_size = 128
     use_audio_tokenizer = False
-    with open(input_jsonl, "r") as fp:
+    with open(input_jsonl, encoding="utf-8") as fp:
         lines = fp.readlines()
     for line in lines:
         item = json.loads(line)

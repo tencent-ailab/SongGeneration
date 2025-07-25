@@ -51,7 +51,7 @@ class Modality(Enum):
 
 @dataclass
 class D2vModalitiesConfig(FairseqDataclass):
-    image: D2vImageConfig = D2vImageConfig()
+    image: D2vImageConfig = field(default_factory=D2vImageConfig)
     
 @dataclass
 class Data2VecMultiConfig(FairseqDataclass):
@@ -122,7 +122,7 @@ class Data2VecMultiConfig(FairseqDataclass):
 
     max_update: int = II("optimization.max_update")
 
-    modalities: D2vModalitiesConfig = D2vModalitiesConfig()
+    modalities: D2vModalitiesConfig = field(default_factory=D2vModalitiesConfig)
 
     shared_decoder: Optional[D2vDecoderConfig] = None
 
