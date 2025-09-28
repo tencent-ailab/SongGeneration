@@ -1,14 +1,17 @@
 # SongGeneration
+
 <p align="center"><img src="img/logo.jpg" width="40%"></p>
 <p align="center">
     <a href="https://levo-demo.github.io/">Demo</a> &nbsp;|&nbsp; <a href="https://arxiv.org/abs/2506.07520">Paper</a>  &nbsp;|&nbsp; <a href="https://huggingface.co/waytan22/SongGeneration">Hugging Face</a>  &nbsp;|&nbsp; <a href="https://huggingface.co/spaces/waytan22/SongGeneration-LeVo">Space Demo</a>
 </p>
 
 
-This repository is the official code repository for LeVo: High-Quality Song Generation with Multi-Preference Alignment. In this repository, we provide the SongGeneration model, inference scripts, and checkpoints trained on the Million Song Dataset that support both Chinese and English.
+
+This repository is the official code repository for LeVo: High-Quality Song Generation with Multi-Preference Alignment. In this repository, we provide the SongGeneration model, inference scripts, checkpoints and some tools such as Dataset Pipeline.
 
 ## News and Updates
 
+* **2025.09.23 🔥**: We have released the [Data Processing Pipeline](https://github.com/tencent-ailab/SongPrep), which is capable of **analyzing the structure and lyrics** of entire songs and **providing precise timestamps** without the need for additional source separation. On the human-annotated test set [SSLD-200](https://huggingface.co/datasets/waytan22/SSLD-200), the model’s performance outperforms mainstream models including Gemini-2.5, Seed-ASR, and Qwen3-ASR.
 * **2025.07.25 🔥**: SongGeneration can now run with as little as **10GB of GPU memory**.
 * **2025.07.18 🔥**: SongGeneration now supports generation of **pure music**, **pure vocals**, and **dual-track (vocals + accompaniment separately)** outputs.
 * **2025.06.16 🔥**: We have released the **SongGeneration** series.
@@ -18,14 +21,15 @@ This repository is the official code repository for LeVo: High-Quality Song Gene
 - [ ] Update full time model.
 - [ ] Update English enhanced model.
 - [ ] Release finetuning scripts.
-- [x] Update Low memory usage model.
+- [x] Release data processing pipeline.
+- [x] Update low memory usage model.
 - [x] Support single vocal/bgm track generation.
 
 ## Model Versions
 
-|          Model           |                         HuggingFace                          |
-| :----------------------: | :----------------------------------------------------------: |
-|  SongGeneration-base   | <a href="https://huggingface.co/tencent/SongGeneration/tree/main/ckpt/songgeneration_base">v20250520</a> |
+|           Model            |                         HuggingFace                          |
+| :------------------------: | :----------------------------------------------------------: |
+|    SongGeneration-base     | <a href="https://huggingface.co/tencent/SongGeneration/tree/main/ckpt/songgeneration_base">v20250520</a> |
 | SongGeneration-base(zh&en) |                         Coming soon                          |
 | SongGeneration-full(zh&en) |                         Coming soon                          |
 
@@ -90,6 +94,7 @@ sh generate.sh ckpt_path lyrics.jsonl output_path
   - **Note:** If certain optional fields are not required, they can be omitted. 
 
 - Outputs of the loader `output_path`:
+
   - `audio`: generated audio files
   - `jsonl`: output jsonls
 
@@ -197,6 +202,7 @@ The `descriptions` field allows you to control various musical attributes of the
 ## Tools
 
 ### Gradio UI
+
 You can start up the UI with the following command:
 
 ```bash
@@ -220,9 +226,11 @@ The code and weights in this repository is released in the [LICENSE](LICENSE)  f
 
 
 ## Contact
+
 Use WeChat or QQ to scan blow QR code.
 
 <div style="display: flex; justify-content: center; gap: 20px; width: 100%;">
   <img src="img/contact.jpg" height="300" />
   <img src="img/contactQQ.jpg" height="300" />
 </div>
+
