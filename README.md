@@ -22,7 +22,7 @@ This repository is the official repository for “LeVo: High-Quality Song Genera
 
 ## TODOs📋
 
-- [ ] Release SongGeneration-v1.5
+- [ ] Release SongGeneration-v1.5 (trained on a larger multilingual dataset, supports more languages, and integrates a Reward Model with Reinforcement Learning to enhance musicality and lyric alignment)
 - [ ] Release finetuning scripts.
 - [ ] Release Music Codec and VAE.
 - [x] Release large model.
