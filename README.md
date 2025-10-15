@@ -7,10 +7,14 @@
 
 
 
-This repository is the official code repository for LeVo: High-Quality Song Generation with Multi-Preference Alignment. In this repository, we provide the SongGeneration model, inference scripts, checkpoints and some tools such as Dataset Pipeline.
+This repository is the official repository for “LeVo: High-Quality Song Generation with Multi-Preference Alignment” (NeurIPS 2025). In this repository, we provide the SongGeneration model, inference scripts,pretrained checkpoints, and some music generation tools.
 
 ## News and Updates
 
+* **2025.10.15🔥**:  We have updated the codebase to improve **inference speed** and **generation quality**, and adapted it to the **latest model version**. Please **update to the newest code** to ensure the **best performance and user experience**.
+* **2025.10.14 🔥**: We have released the **large model (SongGeneration-large)**.
+* **2025.10.13 🔥**: We have released the **full time model (SongGeneration-base-full)** and **evaluation performance**.
+* **2025.10.12 🔥**: We have released the **english enhanced model (SongGeneration-base-new)**.
 * **2025.09.23 🔥**: We have released the [Data Processing Pipeline](https://github.com/tencent-ailab/SongPrep), which is capable of **analyzing the structure and lyrics** of entire songs and **providing precise timestamps** without the need for additional source separation. On the human-annotated test set [SSLD-200](https://huggingface.co/datasets/waytan22/SSLD-200), the model’s performance outperforms mainstream models including Gemini-2.5, Seed-ASR, and Qwen3-ASR.
 * **2025.07.25 🔥**: SongGeneration can now run with as little as **10GB of GPU memory**.
 * **2025.07.18 🔥**: SongGeneration now supports generation of **pure music**, **pure vocals**, and **dual-track (vocals + accompaniment separately)** outputs.
@@ -18,20 +22,32 @@ This repository is the official code repository for LeVo: High-Quality Song Gene
 
 ## TODOs📋
 
-- [ ] Update full time model.
-- [ ] Update English enhanced model.
+- [ ] Release SongGeneration-v1.5
 - [ ] Release finetuning scripts.
+- [ ] Release Music Codec and VAE.
+- [x] Release large model.
+- [x] Release full time model.
+- [x] Release English enhanced model.
 - [x] Release data processing pipeline.
-- [x] Update low memory usage model.
+- [x] Update Low memory usage model.
 - [x] Support single vocal/bgm track generation.
 
 ## Model Versions
 
-|           Model            |                         HuggingFace                          |
-| :------------------------: | :----------------------------------------------------------: |
-|    SongGeneration-base     | <a href="https://huggingface.co/tencent/SongGeneration/tree/main/ckpt/songgeneration_base">v20250520</a> |
-| SongGeneration-base(zh&en) |                         Coming soon                          |
-| SongGeneration-full(zh&en) |                         Coming soon                          |
+| Model                     | Max Length |       Language       | GPU Menmory | RFT(A100) | Download Link                                                |
+| ------------------------- | :--------: | :------------------: | :---------: | :-------: | ------------------------------------------------------------ |
+| SongGeneration-base       |   2m30s    |          zh          |   10G/16G   |   1.26    | [Huggingface](https://huggingface.co/tencent/SongGeneration/tree/main/ckpt/songgeneration_base) |
+| SongGeneration-base-new   |   2m30s    |        zh, en        |   10G/16G   |   1.26    | [Huggingface](https://huggingface.co/lglg666/SongGeneration-base-new) |
+| SongGeneration-base-full  |   4m30s    |        zh, en        |   12G/18G   |   1.30    | [Huggingface](https://huggingface.co/lglg666/SongGeneration-base-full) |
+| SongGeneration-large      |   4m30s    |        zh, en        |   22G/28G   |   1.51    | [Huggingface](https://huggingface.co/lglg666/SongGeneration-large) |
+| SongGeneration-v1.5-small |     2m     | zh, en, es, ja, etc. |      -      |     -     | Coming soon                                                  |
+| SongGeneration-v1.5-base  |   4m30s    | zh, en, es, ja, etc. |      -      |     -     | Coming soon                                                  |
+| SongGeneration-v1.5-large |   4m30s    | zh, en, es, ja, etc. |      -      |     -     | Coming soon                                                  |
+
+💡 **Notes:**
+
+- **GPU Memory** — “X / Y” means X: no prompt audio; Y: with prompt audio.
+- **RFT** — Real Forward Time (pure inference, excluding model loading).
 
 ## Overview
 
@@ -50,7 +66,7 @@ pip install -r requirements.txt
 pip install -r requirements_nodeps.txt --no-deps
 ```
 
-Then install flash attention from git. For example, if you're using Python 3.10 and CUDA 12.0
+**(Optional)** Then install flash attention from git. For example, if you're using Python 3.10 and CUDA 12.0
 
 ```bash
 pip install https://github.com/Dao-AILab/flash-attention/releases/download/v2.7.4.post1/flash_attn-2.7.4.post1+cu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl
@@ -71,10 +87,28 @@ docker run -it --gpus all --network=host juhayna/song-generation-levo:hf0613 /bi
 
 ## Inference
 
-To ensure the model runs correctly, **please download all the required folders** from the original source at [Hugging Face](https://huggingface.co/waytan22/SongGeneration).
+To ensure the model runs correctly, **please download all the required folders** from the original source at [Hugging Face](https://huggingface.co/collections/lglg666/levo-68d0c3031c370cbfadade126).
 
-- Save the `ckpt` and `third_party` folder into the **root directory** of the project
-- Save the the model's `ckpt` and `yaml` files into your desired checkpoint directory: `ckpt_path`（We provide multiple versions of model checkpoints. Please choose the version that best fits your needs and download the corresponding `ckpt` and `yaml` files accordingly.）
+- Download `ckpt` and `third_party` folder from [Hugging Face](https://huggingface.co/lglg666/SongGeneration-Runtime/tree/main) or  [Hugging Face](https://huggingface.co/tencent/SongGeneration/tree/main), and move them into the **root directory** of the project. You can also download models using hugging face-cli.
+
+  ```
+  huggingface-cli download lglg666/SongGeneration-Runtime --local-dir ./runtime
+  mv runtime/ckpt ckpt
+  mv runtime/third_party third_party
+  ```
+
+- Download the specific model checkpoint and save it to your specified checkpoint directory: `ckpt_path` (We provide multiple versions of model checkpoints. Please select the most suitable version based on your needs and download the corresponding file. Also, ensure the folder name matches the model version name.) Your can also download models using hugging face-cli.
+
+  ```
+  # download SongGeneration-base
+  huggingface-cli download lglg666/SongGeneration-base --local-dir ./songgeneration_base
+  # download SongGeneration-base-new
+  huggingface-cli download lglg666/SongGeneration-base-new --local-dir ./songgeneration_base_new
+  # download SongGeneration-base-full
+  huggingface-cli download lglg666/SongGeneration-base-full --local-dir ./songgeneration_base_full
+  # download SongGeneration-large
+  huggingface-cli download lglg666/SongGeneration-large --local-dir ./songgeneration_large
+  ```
 
 Once everything is set up, you can run the inference script using the following command:
 
@@ -101,7 +135,7 @@ sh generate.sh ckpt_path lyrics.jsonl output_path
 - An example command may look like:
 
   ```bash
-  sh generate.sh ckpt/songgeneration_base sample/lyrics.jsonl sample/output
+  sh generate.sh songgeneration_base sample/lyrics.jsonl sample/output
   ```
 
 If you encounter **out-of-memory (OOM**) issues, you can manually enable low-memory inference mode using the `--low_mem` flag. For example:
@@ -109,10 +143,6 @@ If you encounter **out-of-memory (OOM**) issues, you can manually enable low-mem
 ```bash
 sh generate.sh ckpt_path lyrics.jsonl output_path --low_mem
 ```
-
-**Note:** Minimum GPU memory requirements for each model are as follows:
-
-- `SongGeneration-base`: **10GB** without `prompt_audio_path`, **16GB** with `prompt_audio_path` provided.
 
 If your GPU device does **not support Flash Attention** or your environment does **not have Flash Attention installed**, you can disable it by adding the `--not_use_flash_attn` flag. For example:
 
@@ -166,6 +196,8 @@ The `gt_lyric` field defines the lyrics and structure of the song. It consists o
   [intro-short] ; [verse] These faded memories of us. I can't erase the tears you cried before. Unchained this heart to find its way. My peace won't beg you to stay ; [bridge] If ever your truth still remains. Turn around and see. Life rearranged its games. All these lessons in mistakes. Even years may never erase ; [inst-short] ; [chorus] Like a fool begs for supper. I find myself waiting for her. Only to find the broken pieces of my heart. That was needed for my soul to love again ; [outro-short]
   ```
 
+- More examples can be found in `sample/test_en_input.jsonl` and `sample/test_zh_input.jsonl`.
+
 ### 📝 Description Input Format
 
 The `descriptions` field allows you to control various musical attributes of the generated song. It can describe up to six musical dimensions: **Gender** (e.g., male, female), **Timbre** (e.g., dark, bright, soft), **Genre** (e.g., pop, jazz, rock), **Emotion** (e.g., sad, energetic, romantic), **Instrument** (e.g., piano, drums, guitar), **BPM** (e.g., the bpm is 120). 
@@ -181,7 +213,7 @@ The `descriptions` field allows you to control various musical attributes of the
 - Here are a few valid `descriptions` inputs:
 
   ```
-  - female, dark, pop, sad, piano and drums, the bpm is 125.
+  - female, dark, pop, sad, piano and drums.
   - male, piano, jazz.
   - male, dark, the bpm is 110.
   ```
@@ -198,16 +230,194 @@ The `descriptions` field allows you to control various musical attributes of the
   If both are present, and they convey conflicting information, the model may struggle to follow instructions accurately, resulting in degraded generation quality.
 - If `prompt_audio_path` is not provided, you can instead use `auto_prompt_audio_type` for automatic reference selection.
 
-
-## Tools
-
-### Gradio UI
+## Gradio UI
 
 You can start up the UI with the following command:
 
 ```bash
 sh tools/gradio/run.sh ckpt_path
 ```
+
+## Evaluation Performance
+
+### Chinese
+
+ <table>
+  <tr>
+    <th rowspan="2">Model</th>
+    <th rowspan="2">Open-Source</th>
+    <th rowspan="2">PER↓</th>
+    <th colspan="4" style="text-align:center;">Audiobox Aesthetics ↑</th>
+    <th colspan="5" style="text-align:center;">SongEval ↑</th>
+  </tr>
+  <tr>
+    <th>CE</th><th>CU</th><th>PC</th><th>PQ</th>
+    <th>COH</th><th>MUS</th><th>MEM</th><th>CLA</th><th>NAT</th>
+  </tr>
+  <tr>
+    <td>Suno</td>
+    <td>❌</td>
+    <td>21.6%</td>
+    <td>7.65</td><td>7.86</td><td>5.94</td><td>8.35</td>
+    <td><b>4.41</b></td><td><b>4.34</b></td><td><b>4.44</b></td><td><b>4.38</b></td><td><b>4.26</b></td>
+  </tr>
+  <tr>
+    <td>Mureka</td>
+    <td>❌</td>
+    <td>7.2%</td>
+    <td>7.71</td><td>7.83</td><td><b>6.39</b></td><td><u>8.44</u></td>
+    <td>4.01</td><td>3.85</td><td>3.73</td><td>3.87</td><td>3.75</td>
+  </tr>
+  <tr>
+    <td>Haimian</td>
+    <td>❌</td>
+    <td>11.8%</td>
+    <td>7.56</td><td>7.85</td><td>5.89</td><td>8.27</td>
+    <td>3.69</td><td>3.43</td><td>3.51</td><td>3.52</td><td>3.34</td>
+  </tr>
+  <tr>
+    <td>ACE-Step</td>
+    <td>✅</td>
+    <td>37.1%</td>
+    <td>7.37</td><td>7.52</td><td><u>6.26</u></td><td>7.85</td>
+    <td>3.68</td><td>3.45</td><td>3.54</td><td>3.48</td><td>3.38</td>
+  </tr>
+  <tr>
+    <td>Diffrhythm-v1,2</td>
+    <td>✅</td>
+    <td>8.78%</td>
+    <td>6.91</td><td>7.45</td><td>5.45</td><td>7.99</td>
+    <td>2.93</td><td>2.60</td><td>2.70</td><td>2.71</td><td>2.60</td>
+  </tr>
+  <tr>
+    <td>YUE</td>
+    <td>✅</td>
+    <td>14.9%</td>
+    <td>7.29</td><td>7.53</td><td>6.19</td><td>7.96</td>
+    <td>3.68</td><td>3.43</td><td>3.49</td><td>3.49</td><td>3.42</td>
+  </tr>
+  <tr>
+    <td>SongGeneration-base</td>
+    <td>✅</td>
+    <td>7.2%</td>
+    <td>7.78</td><td>7.90</td><td>6.03</td><td>8.42</td>
+    <td>3.96</td><td>3.80</td><td>3.85</td><td>3.74</td><td>3.71</td>
+  </tr>
+  <tr>
+    <td>SongGeneration-base-new</td>
+    <td>✅</td>
+    <td><u>5.7%</u></td>
+    <td><b>7.82</b></td><td><u>7.94</u></td><td>6.07</td><td>8.43</td>
+    <td>4.07</td><td>3.92</td><td>3.98</td><td>3.93</td><td>3.86</td>
+  </tr>
+  <tr>
+    <td>SongGeneration-base-full</td>
+    <td>✅</td>
+    <td>8.4%</td>
+    <td><u>7.81</u></td><td><u>7.94</u></td><td>6.07</td><td>8.41</td>
+    <td>4.02</td><td>3.88</td><td>3.94</td><td>3.87</td><td>3.80</td>
+  </tr>
+  <tr>
+    <td>SongGeneration-large</td>
+    <td>✅</td>
+    <td><b>5.1%</b></td>
+    <td><b>7.82</b></td><td><b>7.95</b></td><td>6.09</td><td><b>8.46</b></td>
+    <td><u>4.08</u></td><td><u>3.94</u></td><td><u>4.00</u></td><td><u>3.94</u></td><td><u>3.87</u></td>
+  </tr>
+</table>
+
+### English
+
+<table>
+  <tr>
+    <th rowspan="2">Model</th>
+    <th rowspan="2">Open-Source</th>
+    <th rowspan="2">PER↓</th>
+    <th colspan="4" style="text-align:center;">Audiobox Aesthetics ↑</th>
+    <th colspan="5" style="text-align:center;">SongEval ↑</th>
+  </tr>
+  <tr>
+    <th>CE</th><th>CU</th><th>PC</th><th>PQ</th>
+    <th>COH</th><th>MUS</th><th>MEM</th><th>CLA</th><th>NAT</th>
+  </tr>
+  <tr>
+    <td>Suno</td>
+    <td>❌</td>
+    <td>15.6%</td>
+    <td>7.64</td><td>7.85</td><td>5.84</td><td>8.19</td>
+    <td><b>4.49</b></td><td><b>4.35</b></td><td><b>4.47</b></td><td><b>4.35</b></td><td><b>4.23</b></td>
+  </tr>
+  <tr>
+    <td>Mureka</td>
+    <td>❌</td>
+    <td><b>12.6%</b></td>
+    <td>7.71</td><td>7.93</td><td><b>6.46</b></td><td>8.39</td>
+    <td>4.06</td><td>3.88</td><td>3.90</td><td>3.90</td><td>3.73</td>
+  </tr>
+  <tr>
+    <td>Haimian</td>
+    <td>❌</td>
+    <td>26.6%</td>
+    <td><b>7.85</b></td><td><u>8.01</u></td><td>5.28</td><td><u>8.44</u></td>
+    <td>3.83</td><td>3.68</td><td>3.71</td><td>3.61</td><td>3.45</td>
+  </tr>
+  <tr>
+    <td>ACE-Step</td>
+    <td>✅</td>
+    <td>32.1%</td>
+    <td>7.19</td><td>7.37</td><td>6.16</td><td>7.57</td>
+    <td>3.59</td><td>3.34</td><td>3.43</td><td>3.36</td><td>3.27</td>
+  </tr>
+  <tr>
+    <td>Diffrhythm-v1.2</td>
+    <td>✅</td>
+    <td>17.8%</td>
+    <td>7.02</td><td>7.58</td><td>5.96</td><td>7.81</td>
+    <td>3.51</td><td>3.12</td><td>3.32</td><td>3.21</td><td>3.08</td>
+  </tr>
+  <tr>
+    <td>YUE</td>
+    <td>✅</td>
+    <td>27.3%</td>
+    <td>7.04</td><td>7.22</td><td>5.89</td><td>7.67</td>
+    <td>3.58</td><td>3.24</td><td>3.42</td><td>3.37</td><td>3.30</td>
+  </tr>
+  <tr>
+    <td>SongGeneration-base</td>
+    <td>✅</td>
+    <td>-</td>
+    <td>-</td><td>-</td><td>-</td><td>-</td>
+    <td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+  </tr>
+  <tr>
+    <td>SongGeneration-base-new</td>
+    <td>✅</td>
+    <td>16.2%</td>
+    <td><u>7.78</u></td><td>7.97</td><td>6.03</td><td>8.37</td>
+    <td>4.05</td><td>3.90</td><td>3.99</td><td>3.91</td><td>3.79</td>
+  </tr>
+  <tr>
+    <td>SongGeneration-base-full</td>
+    <td>✅</td>
+    <td>20.1%</td>
+    <td>7.76</td><td>7.98</td><td>5.96</td><td>8.39</td>
+    <td>4.02</td><td>3.87</td><td>3.97</td><td>3.86</td><td>3.74</td>
+  </tr>
+  <tr>
+    <td>SongGeneration-large</td>
+    <td>✅</td>
+    <td><u>14.9%</u></td>
+    <td><b>7.85</b></td><td><b>8.05</b></td><td><u>6.17</u></td><td><b>8.46</b></td>
+    <td><u>4.08</u></td><td><u>3.94</u></td><td><u>4.03</u></td><td><u>3.93</u></td><td><u>3.82</u></td>
+  </tr>
+</table>
+
+### Notes
+
+1. The evaluation results of SongGeneration are based on **200 generated songs**, including **100 using descriptions** and **100 using `auto_prompt_audio_type=Auto`**. We also provide **40 English** and **40 Chinese** example inputs in
+    `sample/test_en_input.jsonl` and `sample/test_zh_input.jsonl` for reference.
+2. Since the model attempts to clone the timbre and musical style of the given prompt audio, the choice of prompt audio can significantly affect generation performance, and may lead to fluctuations in the evaluation metrics.
+3. The format of the input lyrics has a strong impact on generation quality. If the output quality appears suboptimal, please check whether your lyrics format is correct. You can find more examples of properly formatted inputs in `sample/test_en_input.jsonl` and `sample/test_zh_input.jsonl`.
 
 ## Citation
 
@@ -230,7 +440,6 @@ The code and weights in this repository is released in the [LICENSE](LICENSE)  f
 Use WeChat or QQ to scan blow QR code.
 
 <div style="display: flex; justify-content: center; gap: 20px; width: 100%;">
-  <img src="img/contact.jpg" height="300" />
+  <img src="img/contact.png" height="300" />
   <img src="img/contactQQ.jpg" height="300" />
 </div>
-
