@@ -66,11 +66,7 @@ class LeVoInference(torch.nn.Module):
             torch.cuda.empty_cache()
         elif genre is not None and auto_prompt_path is not None:
             auto_prompt = torch.load(auto_prompt_path)
-            merge_prompt = [item for sublist in auto_prompt.values() for item in sublist]
-            if genre == "Auto": 
-                prompt_token = merge_prompt[np.random.randint(0, len(merge_prompt))]
-            else:
-                prompt_token = auto_prompt[genre][np.random.randint(0, len(auto_prompt[genre]))]
+            prompt_token = auto_prompt[genre][np.random.randint(0, len(auto_prompt[genre]))]
             pmt_wav = prompt_token[:,[0],:]
             vocal_wav = prompt_token[:,[1],:]
             bgm_wav = prompt_token[:,[2],:]

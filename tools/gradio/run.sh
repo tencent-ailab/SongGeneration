@@ -1,3 +1,7 @@
+export OMP_NUM_THREADS=1
+export MKL_NUM_THREADS=1
+export CUDA_LAUNCH_BLOCKING=0
+
 export USER=root
 export PYTHONDONTWRITEBYTECODE=1
 export TRANSFORMERS_CACHE="$(pwd)/third_party/hub"

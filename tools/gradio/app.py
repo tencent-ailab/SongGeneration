@@ -6,6 +6,7 @@ import yaml
 import time
 import re
 import os.path as op
+import torch
 from levo_inference_lowmem import LeVoInference
 
 EXAMPLE_LYRICS = """
@@ -98,7 +99,7 @@ def generate_song(lyric, description=None, prompt_audio=None, genre=None, cfg_co
     progress(0.0, "Start Generation")
     start = time.time()
     
-    audio_data = MODEL(lyric_norm, description, prompt_audio, genre, op.join(APP_DIR, "ckpt/prompt.pt"), gen_type, params).cpu().permute(1, 0).float().numpy()
+    audio_data = MODEL(lyric_norm, description, prompt_audio, genre, op.join(APP_DIR, "tools/new_prompt.pt"), gen_type, params).cpu().permute(1, 0).float().numpy()
 
     end = time.time()
     
@@ -239,4 +240,5 @@ lyrics
 
 # 启动应用
 if __name__ == "__main__":
+    torch.set_num_threads(1)
     demo.launch(server_name="0.0.0.0", server_port=8081)

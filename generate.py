@@ -528,8 +528,6 @@ def generate_lowmem(args):
 
 
 if __name__ == "__main__":
-    # 限制模型使用的显存为0.6
-    torch.cuda.set_per_process_memory_fraction(0.55)
     torch.backends.cudnn.enabled = False
     OmegaConf.register_new_resolver("eval", lambda x: eval(x))
     OmegaConf.register_new_resolver("concat", lambda *x: [xxx for xx in x for xxx in xx])
