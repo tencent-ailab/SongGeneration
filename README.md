@@ -265,7 +265,7 @@ sh tools/gradio/run.sh ckpt_path
     <td>Mureka</td>
     <td>❌</td>
     <td>7.2%</td>
-    <td>7.71</td><td>7.83</td><td><b>6.39</b></td><td><u>8.44</u></td>
+    <td>7.71</td><td>7.83</td><td><b>6.39</b></td><td><b>8.44</b></td>
     <td>4.01</td><td>3.85</td><td>3.73</td><td>3.87</td><td>3.75</td>
   </tr>
   <tr>
@@ -279,7 +279,7 @@ sh tools/gradio/run.sh ckpt_path
     <td>ACE-Step</td>
     <td>✅</td>
     <td>37.1%</td>
-    <td>7.37</td><td>7.52</td><td><u>6.26</u></td><td>7.85</td>
+    <td>7.37</td><td>7.52</td><td><b>6.26</b></td><td>7.85</td>
     <td>3.68</td><td>3.45</td><td>3.54</td><td>3.48</td><td>3.38</td>
   </tr>
   <tr>
@@ -306,15 +306,15 @@ sh tools/gradio/run.sh ckpt_path
   <tr>
     <td>SongGeneration-base-new</td>
     <td>✅</td>
-    <td><u>5.7%</u></td>
-    <td><b>7.82</b></td><td><u>7.94</u></td><td>6.07</td><td>8.43</td>
+    <td><b>5.7%</b></td>
+    <td><b>7.82</b></td><td><b>7.94</b></td><td>6.07</td><td>8.43</td>
     <td>4.07</td><td>3.92</td><td>3.98</td><td>3.93</td><td>3.86</td>
   </tr>
   <tr>
     <td>SongGeneration-base-full</td>
     <td>✅</td>
     <td>8.4%</td>
-    <td><u>7.81</u></td><td><u>7.94</u></td><td>6.07</td><td>8.41</td>
+    <td><b>7.81</b></td><td><b>7.94</b></td><td>6.07</td><td>8.41</td>
     <td>4.02</td><td>3.88</td><td>3.94</td><td>3.87</td><td>3.80</td>
   </tr>
   <tr>
@@ -322,7 +322,7 @@ sh tools/gradio/run.sh ckpt_path
     <td>✅</td>
     <td><b>5.1%</b></td>
     <td><b>7.82</b></td><td><b>7.95</b></td><td>6.09</td><td><b>8.46</b></td>
-    <td><u>4.08</u></td><td><u>3.94</u></td><td><u>4.00</u></td><td><u>3.94</u></td><td><u>3.87</u></td>
+    <td><b>4.08</b></td><td><b>3.94</b></td><td><b>4.00</b></td><td><b>3.94</b></td><td><b>3.87</b></td>
   </tr>
 </table>
 
@@ -358,7 +358,7 @@ sh tools/gradio/run.sh ckpt_path
     <td>Haimian</td>
     <td>❌</td>
     <td>26.6%</td>
-    <td><b>7.85</b></td><td><u>8.01</u></td><td>5.28</td><td><u>8.44</u></td>
+    <td><b>7.85</b></td><td><b>8.01</b></td><td>5.28</td><td><b>8.44</b></td>
     <td>3.83</td><td>3.68</td><td>3.71</td><td>3.61</td><td>3.45</td>
   </tr>
   <tr>
@@ -393,7 +393,7 @@ sh tools/gradio/run.sh ckpt_path
     <td>SongGeneration-base-new</td>
     <td>✅</td>
     <td>16.2%</td>
-    <td><u>7.78</u></td><td>7.97</td><td>6.03</td><td>8.37</td>
+    <td><b>7.78</b></td><td>7.97</td><td>6.03</td><td>8.37</td>
     <td>4.05</td><td>3.90</td><td>3.99</td><td>3.91</td><td>3.79</td>
   </tr>
   <tr>
@@ -406,9 +406,9 @@ sh tools/gradio/run.sh ckpt_path
   <tr>
     <td>SongGeneration-large</td>
     <td>✅</td>
-    <td><u>14.9%</u></td>
-    <td><b>7.85</b></td><td><b>8.05</b></td><td><u>6.17</u></td><td><b>8.46</b></td>
-    <td><u>4.08</u></td><td><u>3.94</u></td><td><u>4.03</u></td><td><u>3.93</u></td><td><u>3.82</u></td>
+    <td><b>14.9%</b></td>
+    <td><b>7.85</b></td><td><b>8.05</b></td><td><b>6.17</b></td><td><b>8.46</b></td>
+    <td><b>4.08</b></td><td><b>3.94</b></td><td><b>4.03</b></td><td><b>3.93</b></td><td><b>3.82</b></td>
   </tr>
 </table>
 
