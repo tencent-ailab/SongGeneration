@@ -11,6 +11,7 @@ This repository is the official repository for “LeVo: High-Quality Song Genera
 
 ## News and Updates
 
+**2025.10.16 🔥**: Our [**Demo webpage**](https://huggingface.co/spaces/tencent/SongGeneration) now supports **full-length song generation (up to 4m30s)**! 🎶  Experience end-to-end music generation with vocals and accompaniment — try it out now!
 * **2025.10.15🔥**:  We have updated the codebase to improve **inference speed** and **generation quality**, and adapted it to the **latest model version**. Please **update to the newest code** to ensure the **best performance and user experience**.
 * **2025.10.14 🔥**: We have released the **large model (SongGeneration-large)**.
 * **2025.10.13 🔥**: We have released the **full time model (SongGeneration-base-full)** and **evaluation performance**.
