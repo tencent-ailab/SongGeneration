@@ -303,8 +303,8 @@ class PromptCondAudioDiffusion(nn.Module):
         for v in self.bestrq.parameters():v.requires_grad = False
         self.rvq_bestrq_emb = ResidualVectorQuantize(input_dim = 1024, n_codebooks = 1, codebook_size = 16_384, codebook_dim = 32, quantizer_dropout = 0.0, stale_tolerance=200)
         for v in self.rvq_bestrq_emb.parameters():v.requires_grad = False
-        self.hubert = HubertModelWithFinalProj.from_pretrained("ckpt/models--lengyue233--content-vec-best/snapshots/c0b9ba13db21beaa4053faae94c102ebe326fd68")
-        for v in self.hubert.parameters():v.requires_grad = False
+        # self.hubert = HubertModelWithFinalProj.from_pretrained("ckpt/models--lengyue233--content-vec-best/snapshots/c0b9ba13db21beaa4053faae94c102ebe326fd68")
+        # for v in self.hubert.parameters():v.requires_grad = False
         self.zero_cond_embedding1 = nn.Parameter(torch.randn(32*32,))
         # self.xvecmodel = XVECModel()
         config = GPT2Config(n_positions=1000,n_layer=39,n_head=30,n_embd=1200)
@@ -317,7 +317,7 @@ class PromptCondAudioDiffusion(nn.Module):
             nn.Linear(1024, 768)  
         )
         self.set_from = "random"
-        self.cfm_wrapper = BASECFM(unet, mlp,self.ssl_layer)
+        # self.cfm_wrapper = BASECFM(unet, mlp,self.ssl_layer)
         self.mask_emb = torch.nn.Embedding(3, 48)
         print("Transformer initialized from pretrain.")
         torch.cuda.empty_cache()
