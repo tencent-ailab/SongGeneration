@@ -14,8 +14,8 @@ import tools.torch_tools as torch_tools
 from safetensors.torch import load_file
 from third_party.demucs.models.pretrained import get_model_from_yaml
 from filelock import FileLock
-import kaldiio
-# os.path.join(args.model_dir, "htdemucs.pth"), os.path.join(args.model_dir, "htdemucs.yaml")
+
+
 class Separator:
     def __init__(self, dm_model_path='demucs/ckpt/htdemucs.pth', dm_config_path='demucs/ckpt/htdemucs.yaml', gpu_id=0) -> None:
         if torch.cuda.is_available() and gpu_id < torch.cuda.device_count():

@@ -4,14 +4,6 @@ except:
     import sys, os
     sys.path.append(os.path.dirname(os.path.abspath(__file__)))
     from model.musicfm_25hz import MusicFM25Hz
-try:
-    from fairseq.fairseq.dataclass import FairseqDataclass
-    from fairseq.fairseq.models import BaseFairseqModel, register_model
-    from fairseq.fairseq.tasks.fairseq_task import FairseqTask
-except:
-    from fairseq.dataclass import FairseqDataclass
-    from fairseq.models import BaseFairseqModel, register_model
-    from fairseq.tasks.fairseq_task import FairseqTask
     
 from dataclasses import dataclass, field
 from typing import List, Tuple, Optional
@@ -22,7 +14,7 @@ from logging import getLogger
 logger = getLogger(__name__)
 
 @dataclass
-class MusicFMConfig(FairseqDataclass):
+class MusicFMConfig:
     label_rate:int = field(default=25)
     num_codebooks:int = field(default=1)
     codebook_dim:int = field(default=16)
@@ -45,9 +37,8 @@ class MusicFMConfig(FairseqDataclass):
 
 SAMPLE_RATE = 24_000
 
-@register_model("musicfm", dataclass=MusicFMConfig)
-class MusicFMModel(BaseFairseqModel):
-    def __init__(self, cfg: MusicFMConfig, task_cfg: FairseqTask):
+class MusicFMModel(torch.nn.Module):
+    def __init__(self, cfg: MusicFMConfig):
         super().__init__()
         self.cfg = cfg
         self.model = MusicFM25Hz(
@@ -91,19 +82,3 @@ class MusicFMModel(BaseFairseqModel):
             result["logits"] = logits
             result["hidden_emb"] = hidden_emb
             return result
-
-    @classmethod
-    def build_model(cls, cfg: MusicFMConfig, task: FairseqTask):
-        """Build a new model instance."""
-
-        model = MusicFMModel(cfg, task.cfg)
-        import numpy as np
-        s = 0
-        for param in model.parameters():
-            s += np.product(param.size())
-        print('# of parameters: '+str(s/1024.0/1024.0))
-        return model
-
-    def get_losses(self, result, batch):
-        return result['losses']
-    

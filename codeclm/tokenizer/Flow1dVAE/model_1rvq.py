@@ -19,11 +19,10 @@ from libs.rvq.descript_quantize3 import ResidualVectorQuantize
 
 from models_gpt.models.gpt2_rope2_time_new_correct_mask_noncasual_reflow import GPT2Model
 from models_gpt.models.gpt2_config import GPT2Config
+from our_MERT_BESTRQ.mert_fairseq.models.musicfm.musicfm_model import MusicFMModel, MusicFMConfig
 
 from torch.cuda.amp import autocast
 
-
-from our_MERT_BESTRQ.test import load_model
 
 class HubertModelWithFinalProj(HubertModel):
     def __init__(self, config):
@@ -272,6 +271,7 @@ class PromptCondAudioDiffusion(nn.Module):
         ssl_layer=None,
         uncondition=True,
         out_paint=False,
+        ssl_path='ckpt/encode-s12k.pt'
     ):
         super().__init__()
 
@@ -294,10 +294,9 @@ class PromptCondAudioDiffusion(nn.Module):
         self.rsq48towav2vec = torchaudio.transforms.Resample(48000, 16000)
         # self.wav2vec = Wav2Vec2BertModel.from_pretrained("facebook/w2v-bert-2.0", trust_remote_code=True)
         # self.wav2vec_processor = AutoFeatureExtractor.from_pretrained("facebook/w2v-bert-2.0", trust_remote_code=True)
-        self.bestrq = load_model(
-            model_dir='codeclm/tokenizer/Flow1dVAE/our_MERT_BESTRQ/mert_fairseq',
-            checkpoint_dir='ckpt/encode-s12k.pt',
-        )
+        self.bestrq = MusicFMModel(MusicFMConfig())
+        bestrq_weights = torch.load(ssl_path, map_location='cpu')["model"]
+        self.bestrq.load_state_dict(bestrq_weights, strict=False)
         self.rsq48tobestrq = torchaudio.transforms.Resample(48000, 24000)
         self.rsq48tohubert = torchaudio.transforms.Resample(48000, 16000)
         for v in self.bestrq.parameters():v.requires_grad = False
@@ -307,15 +306,15 @@ class PromptCondAudioDiffusion(nn.Module):
         # for v in self.hubert.parameters():v.requires_grad = False
         self.zero_cond_embedding1 = nn.Parameter(torch.randn(32*32,))
         # self.xvecmodel = XVECModel()
-        config = GPT2Config(n_positions=1000,n_layer=39,n_head=30,n_embd=1200)
-        unet = GPT2Model(config)
-        mlp =  nn.Sequential(
-            nn.Linear(1200, 1024), 
-            nn.SiLU(),                  
-            nn.Linear(1024, 1024),      
-            nn.SiLU(),                 
-            nn.Linear(1024, 768)  
-        )
+        # config = GPT2Config(n_positions=1000,n_layer=39,n_head=30,n_embd=1200)
+        # unet = GPT2Model(config)
+        # mlp =  nn.Sequential(
+        #     nn.Linear(1200, 1024), 
+        #     nn.SiLU(),                  
+        #     nn.Linear(1024, 1024),      
+        #     nn.SiLU(),                 
+        #     nn.Linear(1024, 768)  
+        # )
         self.set_from = "random"
         # self.cfm_wrapper = BASECFM(unet, mlp,self.ssl_layer)
         self.mask_emb = torch.nn.Embedding(3, 48)
@@ -538,8 +537,6 @@ class PromptCondAudioDiffusion(nn.Module):
         input_audio_0 = self.preprocess_audio(input_audio_0)
         input_audio_1 = self.preprocess_audio(input_audio_1)
 
-        self.bestrq.eval()
-
         # bestrq_middle,bestrq_last = self.extract_bestrq_embeds(input_audios)
         # bestrq_middle = bestrq_middle.detach()
         # bestrq_last = bestrq_last.detach()
@@ -574,8 +571,6 @@ class PromptCondAudioDiffusion(nn.Module):
         input_audio_1 = input_audios[:,1,:]
         input_audio_0 = self.preprocess_audio(input_audio_0)
         input_audio_1 = self.preprocess_audio(input_audio_1)
-
-        self.bestrq.eval()
 
         # bestrq_middle,bestrq_last = self.extract_bestrq_embeds(input_audios)
         # bestrq_middle = bestrq_middle.detach()

@@ -20,9 +20,9 @@ from libs.rvq.descript_quantize3 import ResidualVectorQuantize
 
 from models_gpt.models.gpt2_rope2_time_new_correct_mask_noncasual_reflow import GPT2Model
 from models_gpt.models.gpt2_config import GPT2Config
+from our_MERT_BESTRQ.mert_fairseq.models.musicfm.musicfm_model import MusicFMModel, MusicFMConfig
 
 from torch.cuda.amp import autocast
-from our_MERT_BESTRQ.test import load_model
 
 class HubertModelWithFinalProj(HubertModel):
     def __init__(self, config):
@@ -146,41 +146,52 @@ class BASECFM(torch.nn.Module, ABC):
             mu (torch.Tensor): output of encoder
                 shape: (batch_size, n_channels, mel_timesteps, n_feats)
         """
-        t, _, dt = t_span[0], t_span[-1], t_span[1] - t_span[0]
+        dt = t_span[1:] - t_span[:-1]
+        t = t_span[:-1]
+        B = x.shape[0]
+
+        if guidance_scale > 1.0:
+            def double(z):
+                return torch.cat([z, z], 0) if z is not None else None
+            attention_mask = double(attention_mask)
+
+        x_next = x.clone()
         noise = x.clone()
 
-        # I am storing this because I can later plot it by putting a debugger here and saving it to a file
-        # Or in future might add like a return_all_steps flag
-        sol = []
+        for i in tqdm(range(len(dt))):
+            ti = t[i]
 
-        for step in tqdm(range(1, len(t_span))):
-            x[:,0:incontext_length,:] = (1 - (1 - self.sigma_min) * t) * noise[:,0:incontext_length,:] + t * incontext_x[:,0:incontext_length,:]
-            if(guidance_scale > 1.0):
+            x_next[:, :incontext_length] = (
+                (1 - (1 - self.sigma_min) * ti) * noise[:, :incontext_length] +
+                ti * incontext_x[:, :incontext_length]
+            )
 
-                model_input = torch.cat([ \
-                    torch.cat([latent_mask_input, latent_mask_input], 0), \
-                    torch.cat([incontext_x, incontext_x], 0), \
-                    torch.cat([torch.zeros_like(mu), mu], 0), \
-                    torch.cat([x, x], 0), \
-                    ], 2)
-                timestep=t.unsqueeze(-1).repeat(2)
-
-                dphi_dt = self.estimator(inputs_embeds=model_input, attention_mask=attention_mask,time_step=timestep).last_hidden_state
-                dphi_dt_uncond, dhpi_dt_cond = dphi_dt.chunk(2,0)
-                dphi_dt = dphi_dt_uncond + guidance_scale * (dhpi_dt_cond - dphi_dt_uncond)
+            if guidance_scale > 1.0:
+                model_input = torch.cat([
+                    double(latent_mask_input),
+                    double(incontext_x),
+                    torch.cat([torch.zeros_like(mu), mu], 0),
+                    double(x_next),
+                ], dim=2)
+                timestep = ti.expand(2 * B)
             else:
-                model_input = torch.cat([latent_mask_input, incontext_x, mu, x], 2)
-                timestep=t.unsqueeze(-1)
-                dphi_dt = self.estimator(inputs_embeds=model_input, attention_mask=attention_mask,time_step=timestep).last_hidden_state
-            
-            dphi_dt = dphi_dt[: ,:, -x.shape[2]:]
-            x = x + dt * dphi_dt
-            t = t + dt
-            sol.append(x)
-            if step < len(t_span) - 1:
-                dt = t_span[step + 1] - t
+                model_input = torch.cat([
+                    latent_mask_input, incontext_x, mu, x_next
+                ], dim=2)
+                timestep = ti.expand(B)
 
-        return sol[-1]
+            v = self.estimator(inputs_embeds=model_input,
+                            attention_mask=attention_mask,
+                            time_step=timestep).last_hidden_state
+            v = v[..., -x.shape[2]:]
+
+            if guidance_scale > 1.0:
+                v_uncond, v_cond = v.chunk(2, 0)
+                v = v_uncond + guidance_scale * (v_cond - v_uncond)
+
+            x_next = x_next + dt[i] * v
+
+        return x_next
 
     def projection_loss(self,hidden_proj, bestrq_emb):
         bsz = hidden_proj.shape[0]
@@ -242,6 +253,7 @@ class PromptCondAudioDiffusion(nn.Module):
         snr_gamma=None,
         uncondition=True,
         out_paint=False,
+        ssl_path='ckpt/encode-s12k.pt'
     ):
         super().__init__()
 
@@ -262,10 +274,9 @@ class PromptCondAudioDiffusion(nn.Module):
         self.rsq48towav2vec = torchaudio.transforms.Resample(48000, 16000)
         # self.wav2vec = Wav2Vec2BertModel.from_pretrained("facebook/w2v-bert-2.0", trust_remote_code=True)
         # self.wav2vec_processor = AutoFeatureExtractor.from_pretrained("facebook/w2v-bert-2.0", trust_remote_code=True)
-        self.bestrq = load_model(
-            model_dir='codeclm/tokenizer/Flow1dVAE/our_MERT_BESTRQ/mert_fairseq',
-            checkpoint_dir='ckpt/encode-s12k.pt',
-        )
+        self.bestrq = MusicFMModel(MusicFMConfig())
+        bestrq_weights = torch.load(ssl_path, map_location='cpu')
+        self.bestrq.load_state_dict(bestrq_weights, strict=False)
         self.rsq48tobestrq = torchaudio.transforms.Resample(48000, 24000)
         self.rsq48tohubert = torchaudio.transforms.Resample(48000, 16000)
         for v in self.bestrq.parameters():v.requires_grad = False
