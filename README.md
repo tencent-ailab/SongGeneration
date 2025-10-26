@@ -35,7 +35,7 @@ This repository is the official repository for “LeVo: High-Quality Song Genera
 
 ## Model Versions
 
-| Model                     | Max Length |       Language       | GPU Menmory | RFT(A100) | Download Link                                                |
+| Model                     | Max Length |       Language       | GPU Memory | RFT(A100) | Download Link                                                |
 | ------------------------- | :--------: | :------------------: | :---------: | :-------: | ------------------------------------------------------------ |
 | SongGeneration-base       |   2m30s    |          zh          |   10G/16G   |   1.26    | [Huggingface](https://huggingface.co/tencent/SongGeneration/tree/main/ckpt/songgeneration_base) |
 | SongGeneration-base-new   |   2m30s    |        zh, en        |   10G/16G   |   1.26    | [Huggingface](https://huggingface.co/lglg666/SongGeneration-base-new) |
