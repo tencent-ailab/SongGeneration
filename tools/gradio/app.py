@@ -94,8 +94,6 @@ def generate_song(lyric, description=None, prompt_audio=None, genre=None, cfg_co
         genre = None
         description = None
     elif description is not None and description != "":
-        genre = None
-
     progress(0.0, "Start Generation")
     start = time.time()
     
