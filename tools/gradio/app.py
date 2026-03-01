@@ -95,11 +95,13 @@ def generate_song(lyric, description=None, prompt_audio=None, genre=None, cfg_co
         description = None
     elif description is not None and description != "":
         genre = None
+        if description[-1] != ".":
+            description = description + "."
 
     progress(0.0, "Start Generation")
     start = time.time()
     
-    audio_data = MODEL(lyric_norm, description, prompt_audio, genre, op.join(APP_DIR, "tools/new_prompt.pt"), gen_type, params).cpu().permute(1, 0).float().numpy()
+    audio_data = MODEL(lyric_norm, description, prompt_audio, genre, op.join(APP_DIR, "tools/new_auto_prompt.pt"), gen_type, params).cpu().permute(1, 0).float().numpy()
 
     end = time.time()
     
@@ -148,7 +150,7 @@ lyrics
             with gr.Tabs(elem_id="extra-tabs"):
                 with gr.Tab("Genre Select"):
                     genre = gr.Radio(
-                        choices=["Pop", "R&B", "Dance", "Jazz", "Folk", "Rock", "Chinese Style", "Chinese Tradition", "Metal", "Reggae", "Chinese Opera", "Auto"],
+                        choices=["Auto", "Pop", "Latin", "Rock", "Electronic", "Metal", "Country", "R&B/Soul", "Ballad", "Jazz", "World", "Hip-Hop", "Funk", "Soundtrack"],
                         label="Genre Select(Optional)",
                         value="Pop",
                         interactive=True,

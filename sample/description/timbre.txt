@@ -1,7 +1,0 @@
-dark
-bright
-warm
-rock
-varies
-soft
-vocal

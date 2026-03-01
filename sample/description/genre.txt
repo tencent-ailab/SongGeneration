@@ -1,27 +1,299 @@
+c-pop
+pop rock
+trap
+mandopop
+ballad
+alternative rock
+r&b
+hip-hop
+dance-pop
+singer-songwriter
 pop
-electronic
 hip hop
-rock
-jazz
-blues
-classical
-rap
-country
-classic rock
-hard rock
+indie rock
+synth-pop
 folk
 soul
-dance, electronic
-rockabilly
-dance, dancepop, house, pop
-reggae
-experimental
-dance, pop
-dance, deephouse, electronic
-k-pop
-experimental pop
+vocal jazz
+pop ballad
+indie pop
+cinematic
+funk
+blues rock
+edm
+lo-fi hip hop
+acoustic
+power ballad
+orchestral pop
+electronic
+latin pop
+hard rock
+country
+indie folk
+lo-fi hip-hop
+cumbia
+electropop
+gospel
+traditional pop
+soft rock
+swing
+blues
+big band
+children's music
+chinese traditional
+eurodance
+folk rock
+emo rap
+c-pop ballad
+folk pop
+latin
+neo-soul
 pop punk
 rock and roll
-R&B
-varies
-pop rock
+punk rock
+reggae
+j-rock
+world music
+norteño
+boom bap
+garage rock
+contemporary r&b
+jazz
+chinese folk
+orchestral
+arena rock
+country rock
+reggaeton
+ambient
+easy listening
+regional mexican
+dream pop
+cloud rap
+mandopop ballad
+rock
+alternative r&b
+doo-wop
+j-pop
+acoustic pop
+rockabilly
+dancehall
+psychedelic rock
+gangsta rap
+guofeng
+brazilian funk
+chiptune
+jazz rap
+lo-fi
+progressive house
+trance
+shoegaze
+lounge
+power metal
+trip-hop
+future bass
+funk rock
+corrido
+spoken word
+metalcore
+soundtrack
+new wave
+world fusion
+salsa
+disco
+gufeng
+afrobeats
+conscious hip-hop
+chillwave
+latin folk
+christmas music
+musical theatre
+rock ballad
+rhythm & blues
+classical
+post-punk
+house
+electronic rock
+alternative metal
+forró
+choral
+classical crossover
+pop rap
+chillhop
+heavy metal
+smooth jazz
+emo
+americana
+christian rock
+deep house
+post-rock
+mpb
+bedroom pop
+worship
+nu-disco
+sertanejo
+southern rock
+holiday
+jazz hop
+post-hardcore
+southern hip hop
+traditional chinese music
+jump blues
+latin trap
+v-pop
+classic rock
+show tune
+piseiro
+80s pop
+cantopop
+melodic rap
+contemporary christian music
+forró eletrônico
+hardstyle
+g-funk
+electronic pop
+a cappella
+turkish folk
+country pop
+symphonic rock
+downtempo
+bossa nova
+anisong
+roots reggae
+rock & roll
+power pop
+electro house
+adult contemporary
+torch song
+new age
+schlager
+chanson
+bolero
+bluegrass
+surf rock
+folk-pop
+novelty
+honky tonk
+noise rock
+christian music
+funk carioca
+symphonic metal
+cinematic pop
+tropical
+drill
+conscious hip hop
+hardcore hip hop
+darkwave
+country blues
+lullaby
+ambient pop
+c-rock
+thrash metal
+tech house
+ranchera
+lovers rock
+industrial
+christmas
+banda
+trap soul
+latin rock
+rap rock
+techno
+hardcore punk
+italo disco
+jazz fusion
+baile funk
+gu feng
+acoustic folk
+french rap
+contemporary christian music (ccm)
+nu metal
+acoustic rock
+western swing
+flamenco
+rock en español
+industrial rock
+latin jazz
+samba
+trip hop
+slowcore
+world
+uk drill
+indietronica
+vallenato
+psychedelic pop
+brega
+turkish pop
+christian
+boogie-woogie
+city pop
+sacred music
+skate punk
+sierreño
+anthem
+dub
+lo-fi pop
+patriotic music
+inspirational
+vocal trance
+acid jazz
+progressive rock
+alternative pop
+anime
+tango
+grunge
+worldbeat
+polka
+drum and bass
+soulful house
+vocal
+comedy
+electric blues
+hardcore hip-hop
+arabesque
+oldies
+hyperpop
+baroque pop
+hymn
+speed metal
+dark trap
+irish folk
+dubstep
+indie dance
+cabaret
+latin hip hop
+art pop
+dark pop
+opera
+contemporary christian
+jazz pop
+synthwave
+chamber pop
+christian & gospel
+east coast hip-hop
+europop
+happy hardcore
+sunshine pop
+funk mandelão
+underground hip-hop
+trap metal
+melodic death metal
+dembow
+kayōkyoku
+hi-nrg
+horrorcore
+film score
+traditional chinese
+art rock
+anime music
+rhythm and blues
+new jack swing
+modern country
+ska
+heartland rock
+chicha
+christian hip hop
+progressive metal
+brazilian folk
+dangdut
+experimental
+nursery rhyme

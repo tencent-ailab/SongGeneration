@@ -52,7 +52,8 @@ def get_audio_tokenizer_model_cpu(checkpoint_path: str, cfg: omegaconf.DictConfi
         return AudioTokenizer.get_pretrained(name, cfg.vae_config, cfg.vae_model, 'cpu', mode=cfg.mode, tango_device='cpu')
 
 
-def get_lm_model(cfg: omegaconf.DictConfig): #-> LMModel:
+def get_lm_model(cfg: omegaconf.DictConfig, version: str = 'v1'): #-> LMModel:
+
     """Instantiate a LM."""    
     lm_kwargs = dict_from_config(getattr(cfg, 'lm'))
     
@@ -61,7 +62,7 @@ def get_lm_model(cfg: omegaconf.DictConfig): #-> LMModel:
     q_modeling = lm_kwargs.pop('q_modeling', None)    
         
     # conditioner
-    condition_provider = get_conditioner_provider(lm_kwargs["dim"], cfg)
+    condition_provider = get_conditioner_provider(lm_kwargs["dim"], cfg, version=version)
     
     # codebook pattern: delay
     codebooks_pattern_cfg = getattr(cfg, 'codebooks_pattern')
@@ -97,7 +98,7 @@ def get_lm_model(cfg: omegaconf.DictConfig): #-> LMModel:
         raise KeyError(f"Unexpected LM model {lm_type}")
 
 
-def get_conditioner_provider(output_dim: int, cfg: omegaconf.DictConfig) -> ConditionerProvider:
+def get_conditioner_provider(output_dim: int, cfg: omegaconf.DictConfig, version: str = 'v1') -> ConditionerProvider:
     """Instantiate a conditioning model."""    
     cfg = getattr(cfg, 'conditioners')
     dict_cfg = {} if cfg is None else dict_from_config(cfg)
@@ -110,11 +111,13 @@ def get_conditioner_provider(output_dim: int, cfg: omegaconf.DictConfig) -> Cond
         if model_type == 'QwTokenizer':
             conditioners[str(cond)] = QwTokenizerConditioner(
                 output_dim=output_dim,
+                version=version,
                 **model_args
             )
         elif model_type == "QwTextTokenizer":
             conditioners[str(cond)] = QwTextConditioner(
                 output_dim=output_dim,
+                version=version,
                 **model_args
             )
         elif model_type == "qt_embedding":

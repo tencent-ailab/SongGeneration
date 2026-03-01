@@ -1,40 +1,132 @@
-synthesizer and piano
-piano and drums
-piano and synthesizer
-synthesizer and drums
-piano and strings
-guitar and drums
-guitar and piano
-piano and double bass
-piano and guitar
-acoustic guitar and piano
-acoustic guitar and synthesizer
-synthesizer and guitar
-piano and saxophone
-saxophone and piano
-piano and violin
-electric guitar and drums
-acoustic guitar and drums
 synthesizer
-guitar and fiddle
-guitar and harmonica
-synthesizer and acoustic guitar
-beats
+vocals
+bass guitar
+drums
+drum machine
+electric guitar
 piano
-acoustic guitar and fiddle
-brass and piano
-bass and drums
-violin
-acoustic guitar and harmonica
-piano and cello
-saxophone and trumpet
-guitar and banjo
-guitar and synthesizer
+acoustic guitar
+synth bass
+strings
+808 bass
+sampler
+bass
 saxophone
-violin and piano
-synthesizer and bass
-synthesizer and electric guitar
-electric guitar and piano
-beats and piano
-synthesizer and
+female vocals
+vocal samples
+male vocals
+backing vocals
+trumpet
+upright bass
+accordion
+electric bass
+electric piano
+cello
+drum kit
+percussion
+violin
+trombone
+keyboard
+guzheng
+vocal
+organ
+choir
+synth pad
+flute
+electronic drums
+bass synthesizer
+sound effects
+shaker
+string section
+harmonica
+clarinet
+congas
+dizi (chinese flute)
+brass
+woodwinds
+brass section
+bajo sexto
+synth strings
+double bass
+güiro
+cowbell
+turntables
+sub-bass
+cymbals
+timbales
+dizi
+bongos
+electric organ
+fiddle
+erhu
+tuba
+timpani
+acoustic bass
+orchestra
+synth pads
+vocal chops
+chimes
+hand claps
+viola
+bass synth
+french horn
+orchestral strings
+harp
+slide guitar
+808
 guitar
+spoken word
+electronic percussion
+synth
+chinese flute
+mandolin
+tambourine
+glockenspiel
+bells
+female vocal
+horn section
+sleigh bells
+snare drum
+güira
+vibraphone
+steel guitar
+vocal sample
+pedal steel guitar
+synth flute
+strings (violin, cello)
+oboe
+male vocal
+orchestral percussion
+horns
+male vocalist
+keyboards
+banjo
+wind chimes
+ukulele
+guacharaca
+vocals (rap)
+darbuka
+whistling
+cajón
+female vocalist
+synth lead
+hand percussion
+dizi (chinese bamboo flute)
+male choir
+synthesized strings
+finger snaps
+oud
+spoken word sample
+synth brass
+xylophone
+acoustic piano
+children's choir
+chinese flute (dizi)
+samples
+bağlama
+background vocals
+triangle
+a cappella
+caja vallenata
+requinto guitar
+maracas

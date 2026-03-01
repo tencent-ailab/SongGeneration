@@ -1,16 +1,28 @@
-# SongGeneration
+# SongGeneration 2
 
 <p align="center"><img src="img/logo.jpg" width="40%"></p>
-<p align="center">
-    <a href="https://levo-demo.github.io/">Demo</a> &nbsp;|&nbsp; <a href="https://arxiv.org/abs/2506.07520">Paper</a>  &nbsp;|&nbsp; <a href="https://huggingface.co/waytan22/SongGeneration">Hugging Face</a>  &nbsp;|&nbsp; <a href="https://huggingface.co/spaces/waytan22/SongGeneration-LeVo">Space Demo</a>
-</p>
 
+#### SongGeneration
 
+[![Project Page](https://img.shields.io/badge/Project%20Page-GitHub-blue)](https://github.com/tencent-ailab/songgeneration)[![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model-blue)](https://huggingface.co/tencent/SongGeneration) [![Technical Report](https://img.shields.io/badge/Technical%20Report-Arxiv-red)](https://arxiv.org/abs/2506.07520) [![Samples](https://img.shields.io/badge/Audio%20Samples-Page-green)](https://levo-demo.github.io/)
 
-This repository is the official repository for “LeVo: High-Quality Song Generation with Multi-Preference Alignment” (NeurIPS 2025). In this repository, we provide the SongGeneration model, inference scripts,pretrained checkpoints, and some music generation tools.
+#### SongGeneration 2
+
+[![Project Page](https://img.shields.io/badge/Project%20Page-GitHub-blue)](https://github.com/tencent-ailab/songgeneration)[![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model-blue)![Live Playground](https://img.shields.io/badge/Live%20PlayGround-Demo-orange)](https://huggingface.co/spaces/waytan22/SongGeneration-LeVo) [![Samples](https://img.shields.io/badge/Audio%20Samples-Page-green)](https://levo-demo.github.io/levo_v2_demo/)
+
+🚀 We introduce LeVo 2 (SongGeneration 2), an open-source music foundation model designed to shatter the ceiling of open-source AI music by achieving true commercial-grade generation. 
+
+Through a large-scale, rigorous expert evaluation (20 industry professionals, 6 core dimensions, 100 songs per model), LeVo 2 has proven its superiority:
+
+- 🏆 Commercial-Grade Musicality: Comprehensively outperforms all open-source baselines across Overall Quality, Melody, Arrangement, Sound Quality, and Structure. Its subjective generation quality successfully rivals top-tier closed-source commercial systems (e.g., MiniMax 2.5).
+- 🎯 Precise Lyric Accuracy: Achieves an outstanding Phoneme Error Rate (PER) of 8.55%, effectively solving the lyrical hallucination problem. This remarkable accuracy significantly outperforms top commercial models like Suno v5 (12.4%) and Mureka v8 (9.96%).
+- 🎛️ Exceptional Controllability: Highly responsive to multi-modal instructions, including text descriptions and audio prompts, allowing for precise control over the generated music.
+
+📊 *For detailed experimental setups and comprehensive metrics, please refer to the [Evaluation Performance](#Evaluation-Performance) section below or our upcoming technical report.*
 
 ## News and Updates
 
+* **2026.03.01 🚀**: We proudly introduce SongGeneration 2! We have officially open-sourced the [**SongGeneration-v2-large**](https://huggingface.co/lglg666/SongGeneration-v2-large) (4B parameters) model. It achieves **commercial-grade music generation** with an **outstanding PER of 8.55%** and supports multi-lingual lyrics. Please **update to the newest code** to ensure **optimal performance and user experience**. We also launch the SongGeneration-v2-Fast version on [**Hugging Face Space**](https://huggingface.co/spaces/tencent/SongGeneration)! You can now generate a complete song in under 1 minute, trading a slight loss in musicality for significantly faster generation speed.
 * **2025.10.16 🔥**: Our [**Demo webpage**](https://huggingface.co/spaces/tencent/SongGeneration) now supports **full-length song generation (up to 4m30s)**! 🎶  Experience end-to-end music generation with vocals and accompaniment — try it out now!
 * **2025.10.15 🔥**: We have updated the codebase to improve **inference speed** and **generation quality**, and adapted it to the **latest model version**. Please **update to the newest code** to ensure the **best performance and user experience**.
 * **2025.10.14 🔥**: We have released the **large model (SongGeneration-large)**.
@@ -23,9 +35,12 @@ This repository is the official repository for “LeVo: High-Quality Song Genera
 
 ## TODOs📋
 
-- [ ] Release SongGeneration-v1.5 (trained on a larger multilingual dataset, supports more languages, and integrates a Reward Model with Reinforcement Learning to enhance musicality and lyric alignment)
+- [ ] Release the Automated Music Aesthetic Evaluation Framework.
 - [ ] Release finetuning scripts.
 - [ ] Release Music Codec and VAE.
+- [ ] Release SongGeneration-v2-fast.
+- [ ] Release SongGeneration-v2-medium.
+- [x] Release SongGeneration-v2-large.
 - [x] Release large model.
 - [x] Release full time model.
 - [x] Release English enhanced model.
@@ -35,26 +50,48 @@ This repository is the official repository for “LeVo: High-Quality Song Genera
 
 ## Model Versions
 
-| Model                     | Max Length |       Language       | GPU Memory | RFT(A100) | Download Link                                                |
-| ------------------------- | :--------: | :------------------: | :---------: | :-------: | ------------------------------------------------------------ |
-| SongGeneration-base       |   2m30s    |          zh          |   10G/16G   |   1.26    | [Huggingface](https://huggingface.co/tencent/SongGeneration/tree/main/ckpt/songgeneration_base) |
-| SongGeneration-base-new   |   2m30s    |        zh, en        |   10G/16G   |   1.26    | [Huggingface](https://huggingface.co/lglg666/SongGeneration-base-new) |
-| SongGeneration-base-full  |   4m30s    |        zh, en        |   12G/18G   |   1.30    | [Huggingface](https://huggingface.co/lglg666/SongGeneration-base-full) |
-| SongGeneration-large      |   4m30s    |        zh, en        |   22G/28G   |   1.51    | [Huggingface](https://huggingface.co/lglg666/SongGeneration-large) |
-| SongGeneration-v1.5-small |     2m     | zh, en, es, ja, etc. |      -      |     -     | Coming soon                                                  |
-| SongGeneration-v1.5-base  |   4m30s    | zh, en, es, ja, etc. |      -      |     -     | Coming soon                                                  |
-| SongGeneration-v1.5-large |   4m30s    | zh, en, es, ja, etc. |      -      |     -     | Coming soon                                                  |
+| Model                    | Max Length |       Language       | GPU Memory | RTF(H20) | Download Link                                                |
+| ------------------------ | :--------: | :------------------: | :--------: | :------: | ------------------------------------------------------------ |
+| SongGeneration-base      |   2m30s    |          zh          |  10G/16G   |   0.67   | [Huggingface](https://huggingface.co/tencent/SongGeneration/tree/main/ckpt/songgeneration_base) |
+| SongGeneration-base-new  |   2m30s    |        zh, en        |  10G/16G   |   0.67   | [Huggingface](https://huggingface.co/lglg666/SongGeneration-base-new) |
+| SongGeneration-base-full |   4m30s    |        zh, en        |  12G/18G   |   0.69   | [Huggingface](https://huggingface.co/lglg666/SongGeneration-base-full) |
+| SongGeneration-large     |   4m30s    |        zh, en        |  22G/28G   |   0.82   | [Huggingface](https://huggingface.co/lglg666/SongGeneration-large) |
+| SongGeneration-v2-large  |   4m30s    | zh, en, es, ja, etc. |  22G/28G   |   0.82   | [Huggingface](https://huggingface.co/lglg666/SongGeneration-v2-large) |
+| SongGeneration-v2-medium |   4m30s    | zh, en, es, ja, etc. |  12G/18G   |   0.69   | Coming soon                                                  |
+| SongGeneration-v2-fast   |   4m30s    | zh, en, es, ja, etc. |     -      |    -     | Coming soon                                                  |
 
 💡 **Notes:**
 
 - **GPU Memory** — “X / Y” means X: no prompt audio; Y: with prompt audio.
-- **RFT** — Real Forward Time (pure inference, excluding model loading).
+- **RTF** — Real Time Factor (pure inference, excluding model loading).
 
 ## Overview
 
-We develop the SongGeneration model. It is an LM-based framework consisting of **LeLM** and a **music codec**. LeLM is capable of parallelly modeling two types of tokens: mixed tokens, which represent the combined audio of vocals and accompaniment to achieve vocal-instrument harmony, and dual-track tokens, which separately encode vocals and accompaniment for high-quality song generation. The music codec reconstructs the dual-track tokens into highfidelity music audio. SongGeneration significantly improves over the open-source music generation models and performs competitively with current state-of-the-art industry systems. For more details, please refer to our [paper](https://arxiv.org/abs/2506.07520).
+<img src="../../Library/CloudStorage/OneDrive-%E4%B8%AA%E4%BA%BA/%E5%9B%BE%E7%89%87/over.jpg" alt="img" style="zoom:100%;" />
 
-<img src="img/over.jpg" alt="img" style="zoom:100%;" /> 
+To shatter the ceiling of open-source AI music and achieve commercial-grade generation, SongGeneration 2 introduces a paradigm shift in both its underlying architecture and training strategy.
+
+1. Model Architecture: Hybrid LLM-Diffusion Architecture & Hierarchical Language Model
+
+   SongGeneration 2 adopts a hybrid LLM-Diffusion architecture to balance musicality and sound quality:
+
+   - **LeLM (The "Composer Brain"):** The language model manages the global musical structure and performance details.
+   - **Diffusion (The "Hi-Fi Renderer"):** Guided by the language model, it synthesizes complex acoustic details for high-fidelity audio.
+   - **Hierarchical Language Model:** We introduce a hierarchical language model for the parallel modeling of **Mixed Tokens** (to capture high-level semantics like melody and structure) and **Dual-Track Tokens** (to model vocal and accompaniment tracks in parallel for fine-grained acoustic details).
+
+2. Training Strategy: Automated Aesthetic Evaluation & Multi-stage Progressive Post-Training
+
+   To resolve lyrical hallucinations and stiff musicality, we utilize a highly structured training pipeline:
+
+   - **Automated Aesthetic Evaluation Framework:** We built a fine-grained evaluation framework trained on a massive expert-annotated dataset to provide the model with musicality priors.
+
+   - **Multi-stage Progressive Post-training:** We implemented a 3-stage alignment process:
+
+     **Stage 1 - SFT:** Narrows the data distribution using high-quality songs to build a solid generation baseline.
+
+     **Stage 2 - Large-scale Offline DPO:** Utilizes ~200k strict positive/negative pairs to completely eliminate lyrical hallucinations and stabilize controllability.
+
+     **Stage 3 - Semi-online DPO:** Periodically updates the model based strictly on aesthetic scores to maximize musicality limits.
 
 ## Installation
 
@@ -80,17 +117,11 @@ docker pull juhayna/song-generation-levo:hf0613
 docker run -it --gpus all --network=host juhayna/song-generation-levo:hf0613 /bin/bash
 ```
 
-### Other deploy examples 
-
- - Windows platform with ComfyUI: https://github.com/smthemex/ComfyUI_SongGeneration
- - Windows installer: http://bilibili.com/video/BV1ATK8zQE8L/?vd_source=22cfc54298226c4161b1aff457d17585
- - Quick start with ComfyUI on CNB: https://cnb.cool/tencent/tencent-ailab/examples/SongGeneration-comfyui
-
 ## Inference
 
 To ensure the model runs correctly, **please download all the required folders** from the original source at [Hugging Face](https://huggingface.co/collections/lglg666/levo-68d0c3031c370cbfadade126).
 
-- Download `ckpt` and `third_party` folder from [Hugging Face](https://huggingface.co/lglg666/SongGeneration-Runtime/tree/main) or  [Hugging Face](https://huggingface.co/tencent/SongGeneration/tree/main), and move them into the **root directory** of the project. You can also download models using hugging face-cli.
+- Download `ckpt` and `third_party` folder from [Hugging Face 1](https://huggingface.co/lglg666/SongGeneration-Runtime/tree/main) or  [Hugging Face 2](https://huggingface.co/tencent/SongGeneration/tree/main), and move them into the **root directory** of the project. You can also download models using huggingface-cli.
 
   ```
   huggingface-cli download lglg666/SongGeneration-Runtime --local-dir ./runtime
@@ -98,7 +129,7 @@ To ensure the model runs correctly, **please download all the required folders**
   mv runtime/third_party third_party
   ```
 
-- Download the specific model checkpoint and save it to your specified checkpoint directory: `ckpt_path` (We provide multiple versions of model checkpoints. Please select the most suitable version based on your needs and download the corresponding file. Also, ensure the folder name matches the model version name.) Your can also download models using hugging face-cli.
+- Download the specific model checkpoint and save it to your specified checkpoint directory: `ckpt_path` (We provide multiple versions of model checkpoints. Please select the most suitable version based on your needs and download the corresponding file. Also, ensure the folder name matches the model version name.) You can also download models using huggingface-cli.
 
   ```
   # download SongGeneration-base
@@ -109,6 +140,8 @@ To ensure the model runs correctly, **please download all the required folders**
   huggingface-cli download lglg666/SongGeneration-base-full --local-dir ./songgeneration_base_full
   # download SongGeneration-large
   huggingface-cli download lglg666/SongGeneration-large --local-dir ./songgeneration_large
+  # download SongGeneration-v2-large
+  huggingface-cli download lglg666/SongGeneration-v2-large --local-dir ./songgeneration_v2_large
   ```
 
 Once everything is set up, you can run the inference script using the following command:
@@ -120,12 +153,12 @@ sh generate.sh ckpt_path lyrics.jsonl output_path
 - You may provides sample inputs in JSON Lines (`.jsonl`) format. Each line represents an individual song generation request. The model expects each input to contain the following fields:
 
   - `idx`: A unique identifier for the output song. It will be used as the name of the generated audio file.
-  - `gt_lyric`:The lyrics to be used in generation. It must follow the format of `[Structure] Text`, where `Structure` defines the musical section (e.g., `[Verse]`, `[Chorus]`). See Input Guide.
-  - `descriptions` : (Optional) You may customize the text prompt to guide the model’s generation. This can include attributes like gender, timbre, genre, emotion, instrument, and BPM. See Input Guide.
+  - `gt_lyric`:The lyrics to be used in generation. It must follow the format of `[Structure] Text`, where `Structure` defines the musical section (e.g., `[Verse]`, `[Chorus]`). See [Input Guide](#Input-Guide).
+  - `descriptions` : (Optional) You may customize the text prompt to guide the model’s generation. This can include attributes like gender, genre, emotion, instrument. See [Input Guide](#Input-Guide).
   - `prompt_audio_path`: (Optional) Path to a 10-second reference audio file. If provided, the model will generate a new song in a similar style to the given reference.
 
   - `auto_prompt_audio_type`: (Optional) Used only if `prompt_audio_path` is not provided. This allows the model to automatically select a reference audio from a predefined library based on a given style. Supported values include:
-    - `'Pop'`, `'R&B'`, `'Dance'`, `'Jazz'`, `'Folk'`, `'Rock'`,`'Chinese Style'`, `'Chinese Tradition'`, `'Metal'`, `'Reggae'`, `'Chinese Opera'`, `'Auto'`.
+    - `'Pop'`, `'Latin'`, `'Rock'`, `'Electronic'`, `'Metal'`, `'Country'`,`'R&B/Soul'`, `'Ballad'`, `'Jazz'`, `'World'`, `'Hip-Hop'`,`'Funk'`,`'Soundtrack'`, `'Auto'`.
   - **Note:** If certain optional fields are not required, they can be omitted. 
 
 - Outputs of the loader `output_path`:
@@ -165,11 +198,11 @@ sh generate.sh ckpt_path lyrics.jsonl output_path --separate
 
 ## Input Guide
 
-An example input file can be found in `sample/lyrics.jsonl` 
+An example input file can be found in `sample/lyrics.jsonl`  and  `sample/test100_v2_sg_des.jsonl` 
 
 ### 🎵 Lyrics Input Format
 
-The `gt_lyric` field defines the lyrics and structure of the song. It consists of multiple musical section, each starting with a structure label. The model uses these labels to guide the musical and lyrical progression of the generated song.
+The `gt_lyric` field defines the lyrics and structure of the song. It consists of multiple musical sections, each starting with a structure label. The model uses these labels to guide the musical and lyrical progression of the generated song.
 
 #### 📌 Structure Labels
 
@@ -179,7 +212,6 @@ The `gt_lyric` field defines the lyrics and structure of the song. It consists o
 
   > - `short` indicates a segment of approximately 0–10 seconds
   > - `medium` indicates a segment of approximately 10–20 seconds
-  > - We find that [inst] label is less stable, so we recommend that you do not use it.
 
 - The following segments **require lyrics**:
 
@@ -187,37 +219,60 @@ The `gt_lyric` field defines the lyrics and structure of the song. It consists o
 
 #### 🧾 Lyrics Formatting Rules
 
-- Each section is **separated by ` ; `**
+- To ensure optimal generation quality, please strictly adhere to the following punctuation and formatting rules:
 
-- Within lyrical segments (`[verse]`, `[chorus]`, `[bridge]`), lyrics must be written in complete sentences and separated by a period (`.`)
+  1. **Section Separation:** Each section (whether instrumental or lyrical) must be separated by a semicolon (`;`).
+  2. **Strictly English Punctuation:** Do **not** use any Chinese punctuation marks (e.g., `。`, `，`, `！`). All punctuation must be in English half-width format (e.g., `.`, `,`).
+  3. **Sentence Separation & Endings:** Within lyrical segments (`[verse]`, `[chorus]`, `[bridge]`), use a period (`.`) to separate sentences or phrases.
+     - **For English lyrics:** The final sentence in a lyrical block **must** end with a period (`.`) before the section separator (`;`).
+     - **For Chinese lyrics:** Do **not** place a period (`.`) at the end of the final phrase in a lyrical block. Simply end the phrase, add a space, and use the section separator (`;`).
 
-- A complete lyric string may look like:
+  💡 A complete lyric string may look like:
+
+  **🇺🇸 English Example:**
 
   ```
-  [intro-short] ; [verse] These faded memories of us. I can't erase the tears you cried before. Unchained this heart to find its way. My peace won't beg you to stay ; [bridge] If ever your truth still remains. Turn around and see. Life rearranged its games. All these lessons in mistakes. Even years may never erase ; [inst-short] ; [chorus] Like a fool begs for supper. I find myself waiting for her. Only to find the broken pieces of my heart. That was needed for my soul to love again ; [outro-short]
+  [intro-medium] ; [verse] Trails wind through the forest. Trees stand tall and honest. Moss covers the logs. Sunlight starts to fondest. Birds sing in the branches. Days feel like a promise. ; [chorus] Forest is the sanctuary where the promise does fondest. Is the tree that stands through the storm's honest. Is the moss that covers the log's modest. Is the peace that makes the restless heart honest. ; [inst-medium] ; [verse] Squirrels scamper by. Nuts hide in the sky. Mushrooms grow below. Fungi start to fly. Streams trickle through. Days feel like a sigh. ; [chorus] Forest is the sanctuary where the promise does fondest. Is the tree that stands through the storm's honest. Is the moss that covers the log's modest. Is the peace that makes the restless heart honest. ; [bridge] Hiking through the forest where the trees do sigh. Feeling the peace that the woods supply. Forest days with you are the sweetest high. ; [chorus] Forest is the sanctuary where the promise does fondest. Is the tree that stands through the storm's honest. Is the moss that covers the log's modest. Is the peace that makes the restless heart honest. ; [outro-medium]
   ```
 
-- More examples can be found in `sample/test_en_input.jsonl` and `sample/test_zh_input.jsonl`.
+  **🇨🇳 Chinese Example:**
+
+  ```
+  [intro-medium]; [verse] 凌晨三点的便利店.冰柜发出持续的嗡鸣.穿西装的男人在挑饭团.领带松垮像投降的白旗.热食区的关东煮.在汤汁里慢慢膨胀 ; [chorus] 这里是城市的守夜人.收容所有流浪的灵魂.荧光灯照亮的面孔.都写着未完待续的故事 ; [inst-medium]; [verse] 收银员打着哈欠.扫描仪发出嘀嗒声响.找零的硬币落入掌心.带着金属的冰冷温度 ; [chorus] 这里是临时的避风港.用食物交换片刻温暖.即使最孤独的夜晚.也有泡面陪伴到天明 ; [bridge] 自动门开合之间.涌进带着酒气的风.一个女孩蹲在门口.喂食流浪的玳瑁猫 ; [chorus] 这里是不打烊的剧场.上演着无声的悲喜剧.而我们都是临时演员.在黎明前悄然退场 ; [outro-medium]
+  ```
+
+  More examples can be found in `sample/test100_v2_sg_des.jsonl`.
 
 ### 📝 Description Input Format
 
-The `descriptions` field allows you to control various musical attributes of the generated song. It can describe up to six musical dimensions: **Gender** (e.g., male, female), **Timbre** (e.g., dark, bright, soft), **Genre** (e.g., pop, jazz, rock), **Emotion** (e.g., sad, energetic, romantic), **Instrument** (e.g., piano, drums, guitar), **BPM** (e.g., the bpm is 120). 
+The `descriptions` field allows you to control various musical attributes of the generated song. It can describe up to four musical dimensions:
 
-- All six dimensions are optional — you can specify any subset of them.
+- **Gender** (e.g., `male`, `female`)
+- **Genre** (e.g., `pop`, `jazz`, `rock`)
+- **Emotion** (e.g., `sad`, `energetic`, `romantic`)
+- **Instrument** (e.g., `piano`, `drums`, `guitar`)
 
+**⚠️ CRITICAL FORMATTING RULE: Use Comma-Separated Tags, NOT Sentences.** Please combine specific keywords or tags using commas (`,`). **Do not write full descriptive sentences or natural language paragraphs.**
+
+- All four dimensions are optional — you can specify any subset of them.
 - The order of dimensions is flexible.
+- Although the model supports an open vocabulary, we highly recommend using **predefined tags** for more stable and reliable performance. A list of commonly supported tags for each dimension is available in the `sample/description/` folder.
 
-- Use **commas (`,`)** to separate different attributes.
+#### 💡 Examples
 
-- Although the model supports open vocabulary, we recommend using predefined tags for more stable and reliable performance. A list of commonly supported tags for each dimension is available in the `sample/description/` folder.
+✅ **Valid Inputs (Comma-separated keywords):**
 
-- Here are a few valid `descriptions` inputs:
+```
+female, synth-pop, sweet, synthesizer, drum machine, bass, backing vocals.
+rock, loving, electric guitar, bass guitar, drum kit.
+```
 
-  ```
-  - female, dark, pop, sad, piano and drums.
-  - male, piano, jazz.
-  - male, dark, the bpm is 110.
-  ```
+❌ **Invalid Inputs (Full sentences - DO NOT USE):**
+
+```
+Please generate a sad pop song sung by a female artist using piano and drums.
+A dark jazz song with a male singer.
+```
 
 ### 🎧Prompt Audio Usage Notes
 
@@ -241,184 +296,17 @@ sh tools/gradio/run.sh ckpt_path
 
 ## Evaluation Performance
 
-### Chinese
+To rigorously assess the generation capabilities of LeVo 2 (SongGeneration 2), we conducted a large-scale subjective evaluation involving 20 music professionals. The models were evaluated across six core dimensions: Overall Quality, Melody, Arrangement, Sound Quality-Instrument, Sound Quality-Vocal, and Structure.
 
- <table>
-  <tr>
-    <th rowspan="2">Model</th>
-    <th rowspan="2">Open-Source</th>
-    <th rowspan="2">PER↓</th>
-    <th colspan="4" style="text-align:center;">Audiobox Aesthetics ↑</th>
-    <th colspan="5" style="text-align:center;">SongEval ↑</th>
-  </tr>
-  <tr>
-    <th>CE</th><th>CU</th><th>PC</th><th>PQ</th>
-    <th>COH</th><th>MUS</th><th>MEM</th><th>CLA</th><th>NAT</th>
-  </tr>
-  <tr>
-    <td>Suno</td>
-    <td>❌</td>
-    <td>21.6%</td>
-    <td>7.65</td><td>7.86</td><td>5.94</td><td>8.35</td>
-    <td><b>4.41</b></td><td><b>4.34</b></td><td><b>4.44</b></td><td><b>4.38</b></td><td><b>4.26</b></td>
-  </tr>
-  <tr>
-    <td>Mureka</td>
-    <td>❌</td>
-    <td>7.2%</td>
-    <td>7.71</td><td>7.83</td><td><b>6.39</b></td><td><b>8.44</b></td>
-    <td>4.01</td><td>3.85</td><td>3.73</td><td>3.87</td><td>3.75</td>
-  </tr>
-  <tr>
-    <td>Haimian</td>
-    <td>❌</td>
-    <td>11.8%</td>
-    <td>7.56</td><td>7.85</td><td>5.89</td><td>8.27</td>
-    <td>3.69</td><td>3.43</td><td>3.51</td><td>3.52</td><td>3.34</td>
-  </tr>
-  <tr>
-    <td>ACE-Step</td>
-    <td>✅</td>
-    <td>37.1%</td>
-    <td>7.37</td><td>7.52</td><td><b>6.26</b></td><td>7.85</td>
-    <td>3.68</td><td>3.45</td><td>3.54</td><td>3.48</td><td>3.38</td>
-  </tr>
-  <tr>
-    <td>Diffrhythm-v1,2</td>
-    <td>✅</td>
-    <td>8.78%</td>
-    <td>6.91</td><td>7.45</td><td>5.45</td><td>7.99</td>
-    <td>2.93</td><td>2.60</td><td>2.70</td><td>2.71</td><td>2.60</td>
-  </tr>
-  <tr>
-    <td>YUE</td>
-    <td>✅</td>
-    <td>14.9%</td>
-    <td>7.29</td><td>7.53</td><td>6.19</td><td>7.96</td>
-    <td>3.68</td><td>3.43</td><td>3.49</td><td>3.49</td><td>3.42</td>
-  </tr>
-  <tr>
-    <td>SongGeneration-base</td>
-    <td>✅</td>
-    <td>7.2%</td>
-    <td>7.78</td><td>7.90</td><td>6.03</td><td>8.42</td>
-    <td>3.96</td><td>3.80</td><td>3.85</td><td>3.74</td><td>3.71</td>
-  </tr>
-  <tr>
-    <td>SongGeneration-base-new</td>
-    <td>✅</td>
-    <td><b>5.7%</b></td>
-    <td><b>7.82</b></td><td><b>7.94</b></td><td>6.07</td><td>8.43</td>
-    <td>4.07</td><td>3.92</td><td>3.98</td><td>3.93</td><td>3.86</td>
-  </tr>
-  <tr>
-    <td>SongGeneration-base-full</td>
-    <td>✅</td>
-    <td>8.4%</td>
-    <td><b>7.81</b></td><td><b>7.94</b></td><td>6.07</td><td>8.41</td>
-    <td>4.02</td><td>3.88</td><td>3.94</td><td>3.87</td><td>3.80</td>
-  </tr>
-  <tr>
-    <td>SongGeneration-large</td>
-    <td>✅</td>
-    <td><b>5.1%</b></td>
-    <td><b>7.82</b></td><td><b>7.95</b></td><td>6.09</td><td><b>8.46</b></td>
-    <td><b>4.08</b></td><td><b>3.94</b></td><td><b>4.00</b></td><td><b>3.94</b></td><td><b>3.87</b></td>
-  </tr>
-</table>
+<img src="../../Library/CloudStorage/OneDrive-%E4%B8%AA%E4%BA%BA/%E5%9B%BE%E7%89%87/output-2214682.png" alt="img" style="zoom:100%;" />
 
-### English
+As shown in the benchmarking results above, LeVo 2 comprehensively outperforms all existing open-source baselines and achieves generation quality that directly rivals top-tier closed-source commercial models.
 
-<table>
-  <tr>
-    <th rowspan="2">Model</th>
-    <th rowspan="2">Open-Source</th>
-    <th rowspan="2">PER↓</th>
-    <th colspan="4" style="text-align:center;">Audiobox Aesthetics ↑</th>
-    <th colspan="5" style="text-align:center;">SongEval ↑</th>
-  </tr>
-  <tr>
-    <th>CE</th><th>CU</th><th>PC</th><th>PQ</th>
-    <th>COH</th><th>MUS</th><th>MEM</th><th>CLA</th><th>NAT</th>
-  </tr>
-  <tr>
-    <td>Suno</td>
-    <td>❌</td>
-    <td>15.6%</td>
-    <td>7.64</td><td>7.85</td><td>5.84</td><td>8.19</td>
-    <td><b>4.49</b></td><td><b>4.35</b></td><td><b>4.47</b></td><td><b>4.35</b></td><td><b>4.23</b></td>
-  </tr>
-  <tr>
-    <td>Mureka</td>
-    <td>❌</td>
-    <td><b>12.6%</b></td>
-    <td>7.71</td><td>7.93</td><td><b>6.46</b></td><td>8.39</td>
-    <td>4.06</td><td>3.88</td><td>3.90</td><td>3.90</td><td>3.73</td>
-  </tr>
-  <tr>
-    <td>Haimian</td>
-    <td>❌</td>
-    <td>26.6%</td>
-    <td><b>7.85</b></td><td><b>8.01</b></td><td>5.28</td><td><b>8.44</b></td>
-    <td>3.83</td><td>3.68</td><td>3.71</td><td>3.61</td><td>3.45</td>
-  </tr>
-  <tr>
-    <td>ACE-Step</td>
-    <td>✅</td>
-    <td>32.1%</td>
-    <td>7.19</td><td>7.37</td><td>6.16</td><td>7.57</td>
-    <td>3.59</td><td>3.34</td><td>3.43</td><td>3.36</td><td>3.27</td>
-  </tr>
-  <tr>
-    <td>Diffrhythm-v1.2</td>
-    <td>✅</td>
-    <td>17.8%</td>
-    <td>7.02</td><td>7.58</td><td>5.96</td><td>7.81</td>
-    <td>3.51</td><td>3.12</td><td>3.32</td><td>3.21</td><td>3.08</td>
-  </tr>
-  <tr>
-    <td>YUE</td>
-    <td>✅</td>
-    <td>27.3%</td>
-    <td>7.04</td><td>7.22</td><td>5.89</td><td>7.67</td>
-    <td>3.58</td><td>3.24</td><td>3.42</td><td>3.37</td><td>3.30</td>
-  </tr>
-  <tr>
-    <td>SongGeneration-base</td>
-    <td>✅</td>
-    <td>-</td>
-    <td>-</td><td>-</td><td>-</td><td>-</td>
-    <td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
-  </tr>
-  <tr>
-    <td>SongGeneration-base-new</td>
-    <td>✅</td>
-    <td>16.2%</td>
-    <td><b>7.78</b></td><td>7.97</td><td>6.03</td><td>8.37</td>
-    <td>4.05</td><td>3.90</td><td>3.99</td><td>3.91</td><td>3.79</td>
-  </tr>
-  <tr>
-    <td>SongGeneration-base-full</td>
-    <td>✅</td>
-    <td>20.1%</td>
-    <td>7.76</td><td>7.98</td><td>5.96</td><td>8.39</td>
-    <td>4.02</td><td>3.87</td><td>3.97</td><td>3.86</td><td>3.74</td>
-  </tr>
-  <tr>
-    <td>SongGeneration-large</td>
-    <td>✅</td>
-    <td><b>14.9%</b></td>
-    <td><b>7.85</b></td><td><b>8.05</b></td><td><b>6.17</b></td><td><b>8.46</b></td>
-    <td><b>4.08</b></td><td><b>3.94</b></td><td><b>4.03</b></td><td><b>3.93</b></td><td><b>3.82</b></td>
-  </tr>
-</table>
+### 📌 Notes on Evaluation & Generation
 
-### Notes
-
-1. The evaluation results of SongGeneration are based on **200 generated songs**, including **100 using descriptions** and **100 using `auto_prompt_audio_type=Auto`**. We also provide **40 English** and **40 Chinese** example inputs in
-    `sample/test_en_input.jsonl` and `sample/test_zh_input.jsonl` for reference.
-2. Since the model attempts to clone the timbre and musical style of the given prompt audio, the choice of prompt audio can significantly affect generation performance, and may lead to fluctuations in the evaluation metrics.
-3. The format of the input lyrics has a strong impact on generation quality. If the output quality appears suboptimal, please check whether your lyrics format is correct. You can find more examples of properly formatted inputs in `sample/test_en_input.jsonl` and `sample/test_zh_input.jsonl`.
+- **Evaluation Data:** The evaluation results are based on 100 generated songs using descriptions. We also provide all inputs used for this benchmark in sample/test100_v2_sg_des.jsonl for reference and reproducibility.
+- **Impact of Audio Prompts:** Since the model attempts to clone the timbre and musical style of the given prompt audio, the choice of prompt audio can significantly affect generation performance, and may lead to fluctuations in the evaluation metrics.
+- **Importance of Lyric Formatting:** The format of the input lyrics has a strong impact on generation quality. If the output quality appears suboptimal, please check whether your lyrics format is strictly correct according to our formatting rules. You can find more examples of properly formatted inputs in sample/test100_v2_sg_des.jsonl.
 
 ## Citation
 
@@ -433,14 +321,14 @@ sh tools/gradio/run.sh ckpt_path
 
 ## License
 
-The code and weights in this repository is released in the [LICENSE](LICENSE)  file.
+The code and weights in this repository are released under the [LICENSE](LICENSE)  file.
 
 
 ## Contact
 
-Use WeChat or QQ to scan blow QR code.
+Use WeChat or QQ to scan the below QR code
 
 <div style="display: flex; justify-content: center; gap: 20px; width: 100%;">
-  <img src="img/contact.png" height="300" />
+  <img src="img/contact.jpg" height="300" />
   <img src="img/contactQQ.jpg" height="300" />
 </div>

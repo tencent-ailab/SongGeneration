@@ -111,8 +111,11 @@ class QwTokenizerConditioner(TextConditioner):
     def __init__(self, output_dim: int, 
                  token_path = "",
                  max_len = 300, 
-                 add_token_list=[]): #""
+                 add_token_list=[],
+                 version: str = 'v1'): #""
         from transformers import Qwen2Tokenizer
+        if version != 'v1':
+            add_token_list.append('.')
         self.text_tokenizer = Qwen2Tokenizer.from_pretrained(token_path)
         if add_token_list != []:
             self.text_tokenizer.add_tokens(add_token_list, special_tokens=True)        
@@ -188,11 +191,14 @@ class QwTokenizerConditioner(TextConditioner):
 class QwTextConditioner(TextConditioner):
     def __init__(self, output_dim: int,
                  token_path = "", 
-                 max_len = 300): #""
+                 max_len = 300,
+                 version: str = 'v1'): #""
         
         from transformers import Qwen2Tokenizer
-        self.text_tokenizer = Qwen2Tokenizer.from_pretrained(token_path)    
-        voc_size = len(self.text_tokenizer.get_vocab())         
+        self.text_tokenizer = Qwen2Tokenizer.from_pretrained(token_path)
+        if version != 'v1':
+            self.text_tokenizer.add_tokens(['[Musicality-very-high]', '[Musicality-high]', '[Musicality-medium]', '[Musicality-low]', '[Musicality-very-low]', '[Pure-Music]', '.'], special_tokens=True)
+        voc_size = len(self.text_tokenizer.get_vocab())     
         # here initialize a output_proj (nn.Embedding) layer
         super().__init__(voc_size, output_dim, input_token=True, padding_idx=151643) 
         
@@ -572,8 +578,7 @@ class ClassifierFreeGuidanceDropout(DropoutModule):
         self.check(sample, condition_type, condition)
         
         if condition_type == 'audio':
-            audio_cond = sample.audio[condition]
-            depth = audio_cond.wav.shape[1]       
+            audio_cond = sample.audio[condition] 
             sample.audio[condition] = self.get_null_wav(audio_cond.wav, sr=audio_cond.sample_rate[0])
         else:
             sample.text[condition] = None
@@ -636,7 +641,14 @@ class ClassifierFreeGuidanceDropoutInference(ClassifierFreeGuidanceDropout):
             sample.audio[condition] = self.get_null_wav(audio_cond.wav, sr=audio_cond.sample_rate[0])
         else:
             if customized is None:
-                sample.text[condition] = None
+                if condition in ['type_info'] and sample.text[condition] is not None:
+                    if "[Musicality-very-high]" in sample.text[condition]:
+                        sample.text[condition] = "[Musicality-very-low], ."
+                        print(f"cfg unconditioning: change sample.text[condition] to [Musicality-very-low]")
+                    else:
+                        sample.text[condition] = None
+                else:
+                    sample.text[condition] = None
             else:
                 text_cond = deepcopy(sample.text[condition])
                 if "structure" in customized:

@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 
 import torch
@@ -11,6 +12,21 @@ from codeclm.trainer.codec_song_pl import CodecLM_PL
 from codeclm.models import CodecLM
 
 from separator import Separator
+
+
+def check_language_by_text(text):
+    chinese_pattern = re.compile(r'[\u4e00-\u9fff]')
+    english_pattern = re.compile(r'[a-zA-Z]')
+    chinese_count = len(re.findall(chinese_pattern, text))
+    english_count = len(re.findall(english_pattern, text))
+    chinese_ratio = chinese_count / len(text)
+    english_ratio = english_count / len(text)
+    if chinese_ratio >= 0.2:
+        return "zh"
+    elif english_ratio >= 0.5:
+        return "en"
+    else:
+        return "en"
 
 
 class LeVoInference(torch.nn.Module):
@@ -31,7 +47,7 @@ class LeVoInference(torch.nn.Module):
         self.max_duration = self.cfg.max_dur
 
         # Define model or load pretrained model
-        model_light = CodecLM_PL(self.cfg, pt_path)
+        model_light = CodecLM_PL(self.cfg, pt_path, version="v2")
 
         model_light = model_light.eval().cuda()
         model_light.audiolm.cfg = self.cfg
@@ -71,7 +87,8 @@ class LeVoInference(torch.nn.Module):
             melody_is_wav = True
         elif genre is not None and auto_prompt_path is not None:
             auto_prompt = torch.load(auto_prompt_path)
-            prompt_token = auto_prompt[genre][np.random.randint(0, len(auto_prompt[genre]))]
+            lang = check_language_by_text(lyric)
+            prompt_token = auto_prompt[genre][lang][np.random.randint(0, len(auto_prompt[genre][lang]))]
             pmt_wav = prompt_token[:,[0],:]
             vocal_wav = prompt_token[:,[1],:]
             bgm_wav = prompt_token[:,[2],:]
@@ -82,8 +99,14 @@ class LeVoInference(torch.nn.Module):
             bgm_wav = None
             melody_is_wav = True
 
+        if gen_type == 'bgm':
+            description = '[Musicality-very-high]' + ', ' + '[Pure-Music]' + ', ' + description.lower() if description else '.'
+        else:
+            description = description.lower() if description else '.'
+            description = '[Musicality-very-high]' + ', ' + description
+
         generate_inp = {
-            'lyrics': [lyric.replace("  ", " ")],
+            'lyrics': [lyric.replace("  ", " ")] if gen_type != 'bgm' else '.',
             'descriptions': [description],
             'melody_wavs': pmt_wav,
             'vocal_wavs': vocal_wav,
