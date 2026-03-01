@@ -67,7 +67,7 @@ Through a large-scale, rigorous expert evaluation (20 industry professionals, 6 
 
 ## Overview
 
-<img src="../../Library/CloudStorage/OneDrive-%E4%B8%AA%E4%BA%BA/%E5%9B%BE%E7%89%87/over.jpg" alt="img" style="zoom:100%;" />
+<img src="img/over.jpg" alt="img" style="zoom:100%;" />
 
 To shatter the ceiling of open-source AI music and achieve commercial-grade generation, SongGeneration 2 introduces a paradigm shift in both its underlying architecture and training strategy.
 
