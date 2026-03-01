@@ -298,7 +298,7 @@ sh tools/gradio/run.sh ckpt_path
 
 To rigorously assess the generation capabilities of LeVo 2 (SongGeneration 2), we conducted a large-scale subjective evaluation involving 20 music professionals. The models were evaluated across six core dimensions: Overall Quality, Melody, Arrangement, Sound Quality-Instrument, Sound Quality-Vocal, and Structure.
 
-<img src="../../Library/CloudStorage/OneDrive-%E4%B8%AA%E4%BA%BA/%E5%9B%BE%E7%89%87/output-2214682.png" alt="img" style="zoom:100%;" />
+<img src="img/output.png" alt="img" style="zoom:100%;" />
 
 As shown in the benchmarking results above, LeVo 2 comprehensively outperforms all existing open-source baselines and achieves generation quality that directly rivals top-tier closed-source commercial models.
 
