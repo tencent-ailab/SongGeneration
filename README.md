@@ -4,7 +4,7 @@
 
 #### SongGeneration 2
 
-[![Project Page](https://img.shields.io/badge/Project%20Page-GitHub-blue)](https://github.com/tencent-ailab/songgeneration)[![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model-blue)](https://huggingface.co/tencent/SongGeneration) [![Live Playground](https://img.shields.io/badge/Live%20PlayGround-Demo-orange)](https://huggingface.co/spaces/waytan22/SongGeneration-LeVo) [![Samples](https://img.shields.io/badge/Audio%20Samples-Page-green)](https://levo-demo.github.io/levo_v2_demo/)
+[![Project Page](https://img.shields.io/badge/Project%20Page-GitHub-blue)](https://github.com/tencent-ailab/songgeneration) [![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model-blue)](https://huggingface.co/tencent/SongGeneration) [![Live Playground](https://img.shields.io/badge/Live%20PlayGround-Demo-orange)](https://huggingface.co/spaces/waytan22/SongGeneration-LeVo) [![Samples](https://img.shields.io/badge/Audio%20Samples-Page-green)](https://levo-demo.github.io/levo_v2_demo/)
 
 #### SongGeneration (old version)
 [![Technical Report](https://img.shields.io/badge/Technical%20Report-Arxiv-red)](https://arxiv.org/abs/2506.07520) [![Samples](https://img.shields.io/badge/Audio%20Samples-Page-green)](https://levo-demo.github.io/)
