@@ -11,7 +11,7 @@
 
 🚀 We introduce LeVo 2 (SongGeneration 2), an open-source music foundation model designed to shatter the ceiling of open-source AI music by achieving true commercial-grade generation. 
 
-Through a large-scale, rigorous expert evaluation (20 industry professionals, 6 core dimensions, 100 songs per model), LeVo 2 has proven its superiority:
+Through a large-scale, rigorous expert evaluation (20 industry professionals, 6 core dimensions, 100 songs per model), LeVo 2 (SongGeneration 2) has proven its superiority:
 
 - 🏆 Commercial-Grade Musicality: Comprehensively outperforms all open-source baselines across Overall Quality, Melody, Arrangement, Sound Quality, and Structure. Its subjective generation quality successfully rivals top-tier closed-source commercial systems (e.g., MiniMax 2.5).
 - 🎯 Precise Lyric Accuracy: Achieves an outstanding Phoneme Error Rate (PER) of 8.55%, effectively solving the lyrical hallucination problem. This remarkable accuracy significantly outperforms top commercial models like Suno v5 (12.4%) and Mureka v8 (9.96%).
@@ -299,7 +299,7 @@ To rigorously assess the generation capabilities of LeVo 2 (SongGeneration 2), w
 
 <img src="img/output.png" alt="img" style="zoom:100%;" />
 
-As shown in the benchmarking results above, LeVo 2 comprehensively outperforms all existing open-source baselines and achieves generation quality that directly rivals top-tier closed-source commercial models.
+As shown in the benchmarking results above, LeVo 2 (SongGeneration 2) comprehensively outperforms all existing open-source baselines and achieves generation quality that directly rivals top-tier closed-source commercial models.
 
 ### 📌 Notes on Evaluation & Generation
 
