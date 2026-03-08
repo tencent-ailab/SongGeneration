@@ -18,6 +18,7 @@ Through a large-scale, rigorous expert evaluation (20 industry professionals, 6 
 - 🎛️ Exceptional Controllability: Highly responsive to multi-modal instructions, including text descriptions and audio prompts, allowing for precise control over the generated music.
 
 📊 *For detailed experimental setups and comprehensive metrics, please refer to the [Evaluation Performance](#Evaluation-Performance) section below or our upcoming technical report.*
+
 📢 *All the experimental results above are based on the latest checkpoint released on March 9th. If you downloaded the weights before March 9th, please re-download the latest checkpoint.*
 
 ## News and Updates
