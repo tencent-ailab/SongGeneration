@@ -2,7 +2,6 @@ import yaml
 import random
 import inspect
 import numpy as np
-from tqdm import tqdm
 import typing as tp
 from abc import ABC
 
@@ -158,7 +157,7 @@ class BASECFM(torch.nn.Module, ABC):
         x_next = x.clone()
         noise = x.clone()
 
-        for i in tqdm(range(len(dt))):
+        for i in range(len(dt)):
             ti = t[i]
 
             x_next[:, :incontext_length] = (
@@ -252,8 +251,6 @@ class PromptCondAudioDiffusion(nn.Module):
         unet_model_config_path=None,
         snr_gamma=None,
         uncondition=True,
-        out_paint=False,
-        ssl_path='ckpt/encode-s12k.pt'
     ):
         super().__init__()
 

@@ -37,7 +37,7 @@ from transformers.modeling_outputs import (
     SequenceClassifierOutputWithPast,
     TokenClassifierOutput,
 )
-from transformers.modeling_utils import PreTrainedModel, SequenceSummary
+from transformers.modeling_utils import PreTrainedModel
 from transformers.pytorch_utils import Conv1D, find_pruneable_heads_and_indices, prune_conv1d_layer
 from transformers.utils import (
     ModelOutput,
@@ -50,7 +50,7 @@ from transformers.utils import (
     replace_return_docstrings,
 )
 from transformers.utils.model_parallel_utils import assert_device_map, get_device_map
-from models_gpt.models.gpt2_config import GPT2Config
+from models_gpt.models.gpt2_config import GPT2Config, SequenceSummary
 
 
 if is_flash_attn_2_available():

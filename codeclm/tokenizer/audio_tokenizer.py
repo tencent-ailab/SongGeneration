@@ -134,9 +134,9 @@ class Flow1dVAE1rvq(AudioTokenizer):
 
     
     @torch.no_grad()    
-    def decode(self, codes: torch.Tensor, prompt = None, scale: tp.Optional[torch.Tensor] = None, ncodes=9):
+    def decode(self, codes: torch.Tensor, prompt = None, chunked=False, chunk_size=128):
         wav = self.model.code2sound(codes, prompt=prompt, guidance_scale=1.5, 
-                                    num_steps=10, disable_progress=False) # [B,N,T] -> [B,T]
+                                    num_steps=10, disable_progress=False, chunked=chunked, chunk_size=chunk_size) # [B,N,T] -> [B,T]
         return wav[None]
 
     

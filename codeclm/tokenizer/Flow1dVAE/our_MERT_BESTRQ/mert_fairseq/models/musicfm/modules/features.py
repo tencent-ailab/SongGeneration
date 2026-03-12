@@ -15,7 +15,7 @@
 
 import torchaudio
 from torch import nn
-
+import torch
 
 class MelSTFT(nn.Module):
     def __init__(
@@ -39,7 +39,16 @@ class MelSTFT(nn.Module):
             self.amplitude_to_db = torchaudio.transforms.AmplitudeToDB()
 
     def forward(self, waveform):
-        if self.is_db:
-            return self.amplitude_to_db(self.mel_stft(waveform))
-        else:
-            return self.mel_stft(waveform)
+        # 将数据移至 CPU 处理 STFT，再移回 GPU
+        device = waveform.device
+        waveform_cpu = waveform.cpu()
+        # 强制在 CPU 上运行
+        with torch.cpu.amp.autocast(enabled=False):
+            if self.is_db:
+                spec = self.amplitude_to_db(self.mel_stft.to('cpu')(waveform_cpu))
+            else:
+                spec = self.mel_stft.to('cpu')(waveform_cpu)
+        # 结果移回原设备，并将 mel_stft 移回原设备供下次使用（或者克隆一个 cpu 版的）
+        spec = spec.to(device)
+        self.mel_stft.to(device)
+        return spec

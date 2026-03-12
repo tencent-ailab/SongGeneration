@@ -59,7 +59,7 @@ Through a large-scale, rigorous expert evaluation (20 industry professionals, 6 
 | SongGeneration-large     |   4m30s    |        zh, en        |  22G/28G   |   0.82   | [Huggingface](https://huggingface.co/lglg666/SongGeneration-large) |
 | SongGeneration-v2-large  |   4m30s    | zh, en, es, ja, etc. |  22G/28G   |   0.82   | [Huggingface](https://huggingface.co/lglg666/SongGeneration-v2-large) |
 | SongGeneration-v2-medium |   4m30s    | zh, en, es, ja, etc. |  12G/18G   |   0.69   | Coming soon                                                  |
-| SongGeneration-v2-fast   |   4m30s    | zh, en, es, ja, etc. |     -      |    -     | Coming soon                                                  |
+| SongGeneration-v2-fast   |   4m30s    | zh, en, es, ja, etc. |     -      |   0.25   | [Huggingface](https://huggingface.co/waytan22/SongGeneration-v2.0) |
 
 💡 **Notes:**
 
@@ -98,31 +98,34 @@ To shatter the ceiling of open-source AI music and achieve commercial-grade gene
 
 ### Start from scratch
 
-You can install the necessary dependencies using the `requirements.txt` file with Python>=3.8.12 and CUDA>=11.8:
+You can install the necessary dependencies using the `requirements.txt` file with Python>=3.11 and CUDA>=12.0:
 
 ```bash
 pip install -r requirements.txt
 pip install -r requirements_nodeps.txt --no-deps
 ```
 
-**(Optional)** Then install flash attention from git. For example, if you're using Python 3.10 and CUDA 12.0
+Assuming your vllm installation path is `/root/.venv/lib/python3.11/site-packages/vllm/`, you need to replace the following source files.
 
 ```bash
-pip install https://github.com/Dao-AILab/flash-attention/releases/download/v2.7.4.post1/flash_attn-2.7.4.post1+cu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl
+cp ./vllm_hacked/model_executor/models/llama.py /root/.venv/lib/python3.11/site-packages/vllm/model_executor/models/llama.py
+cp ./vllm_hacked/v1/sample/sampler.py /root/.venv/lib/python3.11/site-packages/vllm/v1/sample/sampler.py
+cp ./vllm_hacked/v1/sample/metadata.py /root/.venv/lib/python3.11/site-packages/vllm/v1/sample/metadata.py
+cp ./vllm_hacked/sampling_params.py /root/.venv/lib/python3.11/site-packages/vllm/sampling_params.py
 ```
 
 ### Start with docker
 
 ```bash
-docker pull juhayna/song-generation-levo:hf0613
-docker run -it --gpus all --network=host juhayna/song-generation-levo:hf0613 /bin/bash
+docker pull witszhang/songgeneration_vllm:v2
+docker run -it --gpus all --network=host witszhang/songgeneration_vllm:v2 /bin/bash
 ```
 
 ## Inference
 
 To ensure the model runs correctly, **please download all the required folders** from the original source at [Hugging Face](https://huggingface.co/collections/lglg666/levo-68d0c3031c370cbfadade126).
 
-- Download `ckpt` and `third_party` folder from [Hugging Face 1](https://huggingface.co/lglg666/SongGeneration-Runtime/tree/main) or  [Hugging Face 2](https://huggingface.co/tencent/SongGeneration/tree/main), and move them into the **root directory** of the project. You can also download models using huggingface-cli.
+- Download `ckpt` and `third_party` folder from [Huggingface](https://huggingface.co/waytan22/SongGeneration-v2.0), and move them into the **root directory** of the project. You can also download models using huggingface-cli.
 
   ```
   huggingface-cli download lglg666/SongGeneration-Runtime --local-dir ./runtime
@@ -170,32 +173,8 @@ sh generate.sh ckpt_path lyrics.jsonl output_path
 - An example command may look like:
 
   ```bash
-  sh generate.sh songgeneration_base sample/lyrics.jsonl sample/output
+  sh generate.sh ckpt sample/lyrics.jsonl out
   ```
-
-If you encounter **out-of-memory (OOM**) issues, you can manually enable low-memory inference mode using the `--low_mem` flag. For example:
-
-```bash
-sh generate.sh ckpt_path lyrics.jsonl output_path --low_mem
-```
-
-If your GPU device does **not support Flash Attention** or your environment does **not have Flash Attention installed**, you can disable it by adding the `--not_use_flash_attn` flag. For example:
-
-```bash
-sh generate.sh ckpt_path lyrics.jsonl output_path --not_use_flash_attn
-```
-
-By default, the model generates **songs with both vocals and accompaniment**. If you want to generate **pure music**, **pure vocals**, or **separated vocal and accompaniment tracks**, please use the following flags:
-
-- `--bgm`  Generate **pure music**
-- `--vocal` Generate **vocal-only (a cappella)**
-- `--separate` Generate **separated vocal and accompaniment tracks**
-
-For example:
-
-```bash
-sh generate.sh ckpt_path lyrics.jsonl output_path --separate
-```
 
 ## Input Guide
 

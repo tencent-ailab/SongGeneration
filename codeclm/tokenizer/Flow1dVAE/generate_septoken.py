@@ -2,7 +2,6 @@ import json
 import torch
 from tqdm import tqdm
 from model_septoken import PromptCondAudioDiffusion
-from diffusers import DDIMScheduler, DDPMScheduler
 import torchaudio
 import librosa
 import os
@@ -247,7 +246,7 @@ class Tango:
         latent_list = []
         spk_embeds = torch.zeros([1, 32, 1, 32], device=codes_vocal.device)
         with torch.autocast(device_type="cuda", dtype=torch.float16):
-            for sinx in range(0, codes_vocal.shape[-1]-hop_samples, hop_samples):
+            for sinx in tqdm(range(0, codes_vocal.shape[-1]-hop_samples, hop_samples), desc="Processed wav"):
                 codes_vocal_input=codes_vocal[:,:,sinx:sinx+min_samples]
                 codes_bgm_input=codes_bgm[:,:,sinx:sinx+min_samples]
                 if(sinx == 0):

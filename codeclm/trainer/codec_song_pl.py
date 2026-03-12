@@ -26,7 +26,7 @@ os.environ['TOKENIZERS_PARALLELISM'] = "false"
 
 
 class CodecLM_PL(pl.LightningModule):
-    def __init__(self, cfg, ckpt_path, version="v1"):
+    def __init__(self, cfg, ckpt_path):
         super().__init__()
 
         self.cfg = cfg
@@ -44,7 +44,7 @@ class CodecLM_PL(pl.LightningModule):
             self.seperate_tokenizer = None
         
         # 2) Build LM
-        self.audiolm = builders.get_lm_model(self.cfg, version=version)
+        self.audiolm = builders.get_lm_model(self.cfg)
         print(self.audiolm)
         # 3) Load pretrained checkpoint (if any)
         checkpoint = torch.load(ckpt_path, map_location='cpu')

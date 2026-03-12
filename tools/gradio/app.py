@@ -7,50 +7,86 @@ import time
 import re
 import os.path as op
 import torch
-from levo_inference_lowmem import LeVoInference
+import soundfile as sf
+import numpy as np
+import tempfile
+from levo_inference import LeVoInference
 
 EXAMPLE_LYRICS = """
-[intro-short]
+[intro-medium]
 
 [verse]
-夜晚的街灯闪烁
-我漫步在熟悉的角落
-回忆像潮水般涌来
-你的笑容如此清晰
-在心头无法抹去
-那些曾经的甜蜜
-如今只剩我独自回忆
-
-[verse]
-手机屏幕亮起
-是你发来的消息
-简单的几个字
-却让我泪流满面
-曾经的拥抱温暖
-如今却变得遥远
-我多想回到从前
-重新拥有你的陪伴
+列车呼啸穿过隧道
+窗外风景急速倒退
+像是与过去在告别
+奔向未定的终点线
+心中混杂期待恐惧
+请别问我要去哪里
+也别追问归期何时
 
 [chorus]
-回忆的温度还在
-你却已不在
-我的心被爱填满
-却又被思念刺痛
-音乐的节奏奏响
-我的心却在流浪
-没有你的日子
-我该如何继续向前
+让我随风去流浪
+我不想停留原地
+原地只有无尽循环
+不再规划人生
+不再遵循地图
+我渴望一场意外之旅
+邂逅未知的自己
 
-[outro-short]
+[inst-short]
+
+[verse]
+行李简单只有背囊
+装着一颗渴望自由的心
+旧照片已撕碎抛洒
+不要任何牵绊
+不要沉重过往
+
+[chorus]
+让我随风去流浪
+我不想停留原地
+原地只会滋生腐朽
+不再规划人生
+不再遵循地图
+我渴望一场灵魂蜕变
+在路途中找到答案
+
+[bridge]
+山川湖海皆是导师
+星空之下顿悟了渺小
+狭隘的悲欢被风吹散
+融入天地间的壮阔
+
+[chorus]
+它教会我何为生命
+何为存在的意义
+渺小如尘却也独特
+勇敢地写下自己的诗
+这是我的远征之路
+生命最绚烂的章节
+
+[outro-medium]
 """.strip()
 
 APP_DIR = op.dirname(op.dirname(op.dirname(op.abspath(__file__))))
-MODEL = LeVoInference(sys.argv[1])
 with open(op.join(APP_DIR, 'conf/vocab.yaml'), 'r', encoding='utf-8') as file:
     STRUCTS = yaml.safe_load(file)
 
 
-def generate_song(lyric, description=None, prompt_audio=None, genre=None, cfg_coef=None, temperature=None, top_k=None, gen_type="mixed", progress=gr.Progress(track_tqdm=True)):
+def save_as_flac(sample_rate, audio_data):
+    if isinstance(audio_data, tuple):
+        sample_rate, audio_data = audio_data
+    
+    if audio_data.dtype == np.float64:
+        audio_data = audio_data.astype(np.float32)
+    
+    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".flac")
+    sf.write(temp_file, audio_data, sample_rate, format='FLAC')
+    return temp_file.name
+
+
+# 模拟歌曲生成函数
+def generate_song(lyric, description=None, prompt_audio=None, genre=None, cfg_coef=None, temperature=0.1, top_k=-1, gen_type="mixed", progress=gr.Progress(track_tqdm=True)):
     global MODEL
     global STRUCTS
     params = {'cfg_coef':cfg_coef, 'temperature':temperature, 'top_k':top_k}
@@ -116,13 +152,14 @@ def generate_song(lyric, description=None, prompt_audio=None, genre=None, cfg_co
         "timestamp": datetime.now().isoformat(),
     }
     
-    return (sample_rate, audio_data), json.dumps(input_config, indent=2)
+    filepath = save_as_flac(sample_rate, audio_data)
+    return filepath, json.dumps(input_config, indent=2)
 
 
 # 创建Gradio界面
 with gr.Blocks(title="SongGeneration Demo Space") as demo:
     gr.Markdown("# 🎵 SongGeneration Demo Space")
-    gr.Markdown("Demo interface for the song generation model. Provide a lyrics, and optionally an audio or text prompt, to generate a custom song. The code is in [GIT](https://github.com/tencent-ailab/SongGeneration)")
+    gr.Markdown("Push to Levo 2.0 — faster and more controllable. The code is in [GIT](https://github.com/tencent-ailab/SongGeneration)")
     
     with gr.Row():
         with gr.Column():
@@ -152,24 +189,24 @@ lyrics
                     genre = gr.Radio(
                         choices=["Auto", "Pop", "Latin", "Rock", "Electronic", "Metal", "Country", "R&B/Soul", "Ballad", "Jazz", "World", "Hip-Hop", "Funk", "Soundtrack"],
                         label="Genre Select(Optional)",
-                        value="Pop",
+                        value="Auto",
                         interactive=True,
                         elem_id="single-select-radio"
+                    )
+                with gr.Tab("Text Prompt"):
+                    gr.Markdown("For detailed usage, please refer to [here](https://github.com/tencent-ailab/SongGeneration?tab=readme-ov-file#-description-input-format)")
+                    description = gr.Textbox(
+                        label="Song Description (Optional)",
+                        info="Describe the gender, genre, emotion, and instrument. Only English is supported currently.​",
+                        placeholder="female, rock, motivational, electric guitar, bass guitar, drum kit.",
+                        lines=1,
+                        max_lines=2
                     )
                 with gr.Tab("Audio Prompt"):
                     prompt_audio = gr.Audio(
                         label="Prompt Audio (Optional)",
                         type="filepath",
                         elem_id="audio-prompt"
-                    )
-                with gr.Tab("Text Prompt"):
-                    gr.Markdown("For detailed usage, please refer to [here](https://github.com/tencent-ailab/SongGeneration?tab=readme-ov-file#-description-input-format)")
-                    description = gr.Textbox(
-                        label="Song Description (Optional)",
-                        info="Describe the gender, timbre, genre, emotion, instrument and bpm of the song. Only English is supported currently.​",
-                        placeholder="female, dark, pop, sad, piano and drums, the bpm is 125.",
-                        lines=1,
-                        max_lines=2
                     )
 
             with gr.Accordion("Advanced Config", open=False):
@@ -178,7 +215,7 @@ lyrics
                     minimum=0.1,
                     maximum=3.0,
                     step=0.1,
-                    value=1.5,
+                    value=1.8,
                     interactive=True,
                     elem_id="cfg-coef",
                 )
@@ -187,25 +224,25 @@ lyrics
                     minimum=0.1,
                     maximum=2.0,
                     step=0.1,
-                    value=0.9,
+                    value=0.8,
                     interactive=True,
                     elem_id="temperature",
                 )
-                top_k = gr.Slider(
-                    label="Top-K",
-                    minimum=1,
-                    maximum=100,
-                    step=1,
-                    value=50,
-                    interactive=True,
-                    elem_id="top_k",
-                )
+                # top_k = gr.Slider(
+                #     label="Top-K",
+                #     minimum=1,
+                #     maximum=100,
+                #     step=1,
+                #     value=50,
+                #     interactive=True,
+                #     elem_id="top_k",
+                # )
             with gr.Row():
                 generate_btn = gr.Button("Generate Song", variant="primary")
-                generate_bgm_btn = gr.Button("Generate Pure Music", variant="primary")
+                # generate_bgm_btn = gr.Button("Generate Pure Music", variant="primary")
         
         with gr.Column():
-            output_audio = gr.Audio(label="Generated Song", type="numpy")
+            output_audio = gr.Audio(label="Generated Song", type="filepath")
             output_json = gr.JSON(label="Generated Info")
     
         # # 示例按钮
@@ -230,17 +267,18 @@ lyrics
     # 生成按钮点击事件
     generate_btn.click(
         fn=generate_song,
-        inputs=[lyric, description, prompt_audio, genre, cfg_coef, temperature, top_k],
+        inputs=[lyric, description, prompt_audio, genre, cfg_coef, temperature, gr.State(5000)],
         outputs=[output_audio, output_json]
     )
-    generate_bgm_btn.click(
-        fn=generate_song,
-        inputs=[lyric, description, prompt_audio, genre, cfg_coef, temperature, top_k, gr.State("bgm")],
-        outputs=[output_audio, output_json]
-    )
+    # generate_bgm_btn.click(
+    #     fn=generate_song,
+    #     inputs=[lyric, description, prompt_audio, genre, cfg_coef, temperature, gr.State(50), gr.State("bgm")],
+    #     outputs=[output_audio, output_json]
+    # )
     
 
 # 启动应用
 if __name__ == "__main__":
     torch.set_num_threads(1)
+    MODEL = LeVoInference(sys.argv[1])
     demo.launch(server_name="0.0.0.0", server_port=8081)

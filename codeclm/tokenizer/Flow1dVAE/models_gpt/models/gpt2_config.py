@@ -18,6 +18,8 @@
 from collections import OrderedDict
 from typing import Any, List, Mapping, Optional
 
+import torch
+import torch.nn as nn
 from transformers import PreTrainedTokenizer, TensorType, is_torch_available
 from transformers.configuration_utils import PretrainedConfig
 from transformers.onnx import OnnxConfigWithPast, PatchingSpec
@@ -25,6 +27,59 @@ from transformers.utils import logging
 
 
 logger = logging.get_logger(__name__)
+
+
+class SequenceSummary(nn.Module):
+    """Compute a single vector summary of a sequence hidden states."""
+    
+    def __init__(self, config: PretrainedConfig):
+        super().__init__()
+        self.summary_type = getattr(config, "summary_type", "last")
+        self.summary_use_proj = getattr(config, "summary_use_proj", True)
+        self.summary_activation = getattr(config, "summary_activation", None)
+        self.summary_last_dropout = getattr(config, "summary_last_dropout", 0.0)
+        self.summary_first_dropout = getattr(config, "summary_first_dropout", 0.0)
+        self.summary_proj_to_labels = getattr(config, "summary_proj_to_labels", True)
+        
+        if self.summary_use_proj:
+            if self.summary_proj_to_labels and hasattr(config, "num_labels"):
+                num_classes = config.num_labels
+            else:
+                num_classes = config.hidden_size
+            self.summary = nn.Linear(config.hidden_size, num_classes)
+        
+        self.activation = nn.Tanh() if self.summary_activation == "tanh" else None
+        self.first_dropout = nn.Dropout(self.summary_first_dropout) if self.summary_first_dropout > 0 else None
+        self.last_dropout = nn.Dropout(self.summary_last_dropout) if self.summary_last_dropout > 0 else None
+    
+    def forward(self, hidden_states, cls_index=None):
+        if self.summary_type == "last":
+            output = hidden_states[:, -1]
+        elif self.summary_type == "first":
+            output = hidden_states[:, 0]
+        elif self.summary_type == "mean":
+            output = hidden_states.mean(dim=1)
+        elif self.summary_type == "cls_index":
+            if cls_index is None:
+                cls_index = torch.full_like(hidden_states[:, :1, :1], hidden_states.size(1) - 1, dtype=torch.long)
+            cls_index = cls_index[:, 0].long()
+            output = hidden_states[torch.arange(hidden_states.size(0)), cls_index]
+        else:
+            output = hidden_states[:, -1]  # default to last
+        
+        if self.first_dropout:
+            output = self.first_dropout(output)
+        
+        if self.summary_use_proj:
+            output = self.summary(output)
+        
+        if self.activation:
+            output = self.activation(output)
+        
+        if self.last_dropout:
+            output = self.last_dropout(output)
+        
+        return output
 
 
 class GPT2Config(PretrainedConfig):

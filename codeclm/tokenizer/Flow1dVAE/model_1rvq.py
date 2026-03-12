@@ -2,7 +2,6 @@ import yaml
 import random
 import inspect
 import numpy as np
-from tqdm import tqdm
 import typing as tp
 from abc import ABC
 
@@ -156,7 +155,7 @@ class BASECFM(torch.nn.Module, ABC):
         # Or in future might add like a return_all_steps flag
         sol = []
 
-        for step in tqdm(range(1, len(t_span))):
+        for step in range(1, len(t_span)):
             # print("incontext_x.shape:",incontext_x.shape)
             # print("noise.shape:",noise.shape)
             # print("t.shape:",t.shape)
@@ -270,8 +269,6 @@ class PromptCondAudioDiffusion(nn.Module):
         hubert_layer=None,
         ssl_layer=None,
         uncondition=True,
-        out_paint=False,
-        ssl_path='ckpt/encode-s12k.pt'
     ):
         super().__init__()
 
@@ -303,17 +300,17 @@ class PromptCondAudioDiffusion(nn.Module):
         # for v in self.hubert.parameters():v.requires_grad = False
         self.zero_cond_embedding1 = nn.Parameter(torch.randn(32*32,))
         # self.xvecmodel = XVECModel()
-        # config = GPT2Config(n_positions=1000,n_layer=39,n_head=30,n_embd=1200)
-        # unet = GPT2Model(config)
-        # mlp =  nn.Sequential(
-        #     nn.Linear(1200, 1024), 
-        #     nn.SiLU(),                  
-        #     nn.Linear(1024, 1024),      
-        #     nn.SiLU(),                 
-        #     nn.Linear(1024, 768)  
-        # )
+        config = GPT2Config(n_positions=1000,n_layer=39,n_head=30,n_embd=1200)
+        unet = GPT2Model(config)
+        mlp =  nn.Sequential(
+            nn.Linear(1200, 1024), 
+            nn.SiLU(),                  
+            nn.Linear(1024, 1024),      
+            nn.SiLU(),                 
+            nn.Linear(1024, 768)  
+        )
         self.set_from = "random"
-        # self.cfm_wrapper = BASECFM(unet, mlp,self.ssl_layer)
+        self.cfm_wrapper = BASECFM(unet, mlp,self.ssl_layer)
         self.mask_emb = torch.nn.Embedding(3, 48)
         print("Transformer initialized from pretrain.")
         torch.cuda.empty_cache()
@@ -604,37 +601,19 @@ class PromptCondAudioDiffusion(nn.Module):
         dtype = self.dtype
         # codes_bestrq_middle, codes_bestrq_last = codes
         codes_bestrq_emb = codes[0]
-
-
         batch_size = codes_bestrq_emb.shape[0]
-
-
         quantized_bestrq_emb,_,_=self.rvq_bestrq_emb.from_codes(codes_bestrq_emb)
-        # quantized_bestrq_emb = torch.nn.functional.interpolate(quantized_bestrq_emb, size=(int(quantized_bestrq_emb.shape[-1]/999*937),), mode='linear', align_corners=True)
         quantized_bestrq_emb = quantized_bestrq_emb.permute(0,2,1).contiguous()
-        print("quantized_bestrq_emb.shape:",quantized_bestrq_emb.shape)
-        # quantized_bestrq_emb = torch.nn.functional.interpolate(quantized_bestrq_emb, size=(int(quantized_bestrq_emb.shape[-1]/999*937),), mode='linear', align_corners=True)
-
-
-        
-
         if('spk' in additional_feats):
             spk_embeds = spk_embeds.repeat(1,1,quantized_bestrq_emb.shape[-2],1).detach()
-
         num_frames = quantized_bestrq_emb.shape[1]
-
         num_channels_latents = self.num_channels
         shape = (batch_size,  num_frames, 64)
         latents = randn_tensor(shape, generator=None, device=device, dtype=dtype)
-
-
-
         latent_masks = torch.zeros(latents.shape[0], latents.shape[1], dtype=torch.int64, device=latents.device)
         latent_masks[:,0:latent_length] = 2
         if(scenario=='other_seg'):
             latent_masks[:,0:incontext_length] = 1
-
-        
 
         quantized_bestrq_emb = (latent_masks > 0.5).unsqueeze(-1) * quantized_bestrq_emb \
             + (latent_masks < 0.5).unsqueeze(-1) * self.zero_cond_embedding1.reshape(1,1,1024)
@@ -643,7 +622,6 @@ class PromptCondAudioDiffusion(nn.Module):
         true_latents = true_latents.permute(0,2,1).contiguous()
         incontext_latents = true_latents * ((latent_masks > 0.5) * (latent_masks < 1.5)).unsqueeze(-1).float()
         incontext_length = ((latent_masks > 0.5) * (latent_masks < 1.5)).sum(-1)[0]
-
 
         attention_mask=(latent_masks > 0.5)
         B, L = attention_mask.size()

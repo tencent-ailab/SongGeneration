@@ -111,11 +111,9 @@ class QwTokenizerConditioner(TextConditioner):
     def __init__(self, output_dim: int, 
                  token_path = "",
                  max_len = 300, 
-                 add_token_list=[],
-                 version: str = 'v1'): #""
+                 add_token_list=[]): #""
+        add_token_list.append('.')
         from transformers import Qwen2Tokenizer
-        if version != 'v1':
-            add_token_list.append('.')
         self.text_tokenizer = Qwen2Tokenizer.from_pretrained(token_path)
         if add_token_list != []:
             self.text_tokenizer.add_tokens(add_token_list, special_tokens=True)        
@@ -160,9 +158,6 @@ class QwTokenizerConditioner(TextConditioner):
                 tp_cover_range[b, st: sp_list[i+1]] = tokens[b, st] - 151645
 
         if self.max_len is not None:
-            if inputs['input_ids'].shape[-1] > self.max_len:
-                warnings.warn(f"Max len limit ({self.max_len}) Exceed! \
-                              {[self.text_tokenizer.convert_ids_to_tokens(i.tolist()) for i in tokens]} will be cut!")
             tokens = self.pad_2d_tensor(tokens, self.max_len, self.pad_token_idx).to(self.output_proj.weight.device)
             mask = self.pad_2d_tensor(mask, self.max_len, 0).to(self.output_proj.weight.device)
             tp_cover_range = self.pad_2d_tensor(tp_cover_range, self.max_len, 0).to(self.output_proj.weight.device)
@@ -171,7 +166,7 @@ class QwTokenizerConditioner(TextConditioner):
         structure_embeds = self.structure_emb(tp_cover_range.to(device))
 
         embeds = content_embeds + structure_embeds
-        return embeds, embeds, mask
+        return embeds, mask
     
     def pad_2d_tensor(self, x, max_len, pad_id):
         batch_size, seq_len = x.size()
@@ -192,13 +187,13 @@ class QwTextConditioner(TextConditioner):
     def __init__(self, output_dim: int,
                  token_path = "", 
                  max_len = 300,
-                 version: str = 'v1'): #""
+                 version: str = 'v1.0'): #""
         
         from transformers import Qwen2Tokenizer
-        self.text_tokenizer = Qwen2Tokenizer.from_pretrained(token_path)
-        if version != 'v1':
-            self.text_tokenizer.add_tokens(['[Musicality-very-high]', '[Musicality-high]', '[Musicality-medium]', '[Musicality-low]', '[Musicality-very-low]', '[Pure-Music]', '.'], special_tokens=True)
-        voc_size = len(self.text_tokenizer.get_vocab())     
+        self.text_tokenizer = Qwen2Tokenizer.from_pretrained(token_path)    
+        self.text_tokenizer.add_tokens(['[Musicality-very-high]', '[Musicality-high]', '[Musicality-medium]', '[Musicality-low]', '[Musicality-very-low]', '[Pure-Music]', '.'], special_tokens=True)
+        print(self.text_tokenizer)
+        voc_size = len(self.text_tokenizer.get_vocab())         
         # here initialize a output_proj (nn.Embedding) layer
         super().__init__(voc_size, output_dim, input_token=True, padding_idx=151643) 
         
@@ -226,7 +221,7 @@ class QwTextConditioner(TextConditioner):
             mask = self.pad_2d_tensor(mask, self.max_len, 0).to(self.output_proj.weight.device)
     
         embeds = self.output_proj(tokens)
-        return embeds, embeds, mask
+        return embeds, mask
     
     def pad_2d_tensor(self, x, max_len, pad_id):
         batch_size, seq_len = x.size()
@@ -258,7 +253,6 @@ class QuantizedEmbeddingConditioner(AudioConditioner):
         self.emb = nn.ModuleList([nn.Embedding(code_size+2, dim, padding_idx=code_size+1) for _ in range(code_depth)])
         # add End-Of-Text embedding
         self.EOT_emb = nn.Parameter(torch.randn(1, dim), requires_grad=True)
-        self.layer2_EOT_emb = nn.Parameter(torch.randn(1, dim), requires_grad=True)
         self.output_proj = None
         self.max_len = max_len
         self.vocab_size = code_size
@@ -277,20 +271,20 @@ class QuantizedEmbeddingConditioner(AudioConditioner):
             wav = F.pad(wav, [0, self.max_len - 1 - wav.shape[2]], value=self.vocab_size+1)
         else:
             wav = wav[:, :, :self.max_len-1]
-        embeds1 = self.emb[0](wav[:, 0])
-        embeds1 = torch.cat((self.EOT_emb.unsqueeze(0).repeat(B, 1, 1), 
-                                embeds1), dim=1)
-        embeds2 = sum([self.emb[k](wav[:, k]) for k in range(1, self.code_depth)]) # B,T,D
-        embeds2 = torch.cat((self.layer2_EOT_emb.unsqueeze(0).repeat(B, 1, 1), 
-                             embeds2), dim=1)  
+        # self.emb.to(wav.device)  # 都放cuda
+        wav = wav.to(self.emb[0].weight.device)
+        embeds = sum([self.emb[k](wav[:, k]) for k in range(self.code_depth)]) # B,T,D
+        # self.EOT_emb.data = self.EOT_emb.data.to(embeds.device)
+        embeds = torch.cat((self.EOT_emb.unsqueeze(0).repeat(B, 1, 1), 
+                                embeds), dim=1)  
         lengths = lengths + 1
         lengths = torch.clamp(lengths, max=self.max_len)
 
         if lengths is not None:
-            mask = length_to_mask(lengths, max_len=embeds1.shape[1]).int()  # type: ignore
+            mask = length_to_mask(lengths, max_len=embeds.shape[1]).int()  # type: ignore
         else:
-            mask = torch.ones((B, self.code_depth), device=embeds1.device, dtype=torch.int)
-        return embeds1, embeds2, mask
+            mask = torch.ones((B, self.code_depth), device=embeds.device, dtype=torch.int)
+        return embeds, mask
 
 
 # ================================================================
@@ -359,10 +353,10 @@ class ConditionerProvider(nn.Module):
         output = {}
         for attribute, inputs in tokenized.items():
             if attribute == 'description' and structure_dur is not None:
-                condition1, condition2, mask = self.conditioners[attribute](inputs, structure_dur = structure_dur)
+                condition, mask = self.conditioners[attribute](inputs, structure_dur = structure_dur)
             else:
-                condition1, condition2, mask = self.conditioners[attribute](inputs)
-            output[attribute] = (condition1, condition2, mask)
+                condition, mask = self.conditioners[attribute](inputs)
+            output[attribute] = (condition, mask)
         return output
 
     def _collate_text(self, samples: tp.List[ConditioningAttributes]) -> tp.Dict[str, tp.List[tp.Optional[str]]]:
@@ -463,8 +457,7 @@ class ConditionFuser(StreamingModule):
                 
     def forward(
         self,
-        input1: torch.Tensor,
-        input2: torch.Tensor,
+        input: torch.Tensor,
         conditions: tp.Dict[str, ConditionType]
     ) -> tp.Tuple[torch.Tensor, tp.Optional[torch.Tensor]]:
         """Fuse the conditions to the provided model input.
@@ -478,14 +471,14 @@ class ConditionFuser(StreamingModule):
                 used for cross-attention or None if no cross attention inputs exist.
         """
         #import pdb; pdb.set_trace()
-        B, T, _ = input1.shape
+        B, T, _ = input.shape
 
         if 'offsets' in self._streaming_state:
             first_step = False
             offsets = self._streaming_state['offsets']
         else:
             first_step = True
-            offsets = torch.zeros(input1.shape[0], dtype=torch.long, device=input1.device)
+            offsets = torch.zeros(input.shape[0], dtype=torch.long, device=input.device)
 
         assert set(conditions.keys()).issubset(set(self.cond2fuse.keys())), \
             f"given conditions contain unknown attributes for fuser, " \
@@ -494,31 +487,28 @@ class ConditionFuser(StreamingModule):
         # if 'prepend' mode is used, 
         # the concatenation order will be the SAME with the conditions in config:
         # prepend: ['description', 'prompt_audio'] (then goes the input)
-        fused_input_1 = input1
-        fused_input_2 = input2
+        fused_input = input
         for fuse_op in self.fuse2cond.keys():
             fuse_op_conditions = self.fuse2cond[fuse_op]
             if fuse_op == 'sum' and len(fuse_op_conditions) > 0:                
                 for cond in fuse_op_conditions:
-                    this_cond_1, this_cond_2, cond_mask = conditions[cond]
-                    fused_input_1 += this_cond_1
-                    fused_input_2 += this_cond_2
+                    this_cond, cond_mask = conditions[cond]
+                    fused_input += this_cond
             elif fuse_op == 'prepend' and len(fuse_op_conditions) > 0:
                 if not first_step:
                     continue
                 reverse_list = deepcopy(fuse_op_conditions)
                 reverse_list.reverse()              
                 for cond in reverse_list:
-                    this_cond_1, this_cond_2, cond_mask = conditions[cond]
-                    fused_input_1 = torch.cat((this_cond_1, fused_input_1), dim=1)  # concat along T dim
-                    fused_input_2 = torch.cat((this_cond_2, fused_input_2), dim=1)  # concat along T dim
+                    this_cond, cond_mask = conditions[cond]
+                    fused_input = torch.cat((this_cond, fused_input), dim=1)  # concat along T dim
             elif fuse_op not in self.FUSING_METHODS:
                 raise ValueError(f"unknown op ({fuse_op})")
 
         if self._is_streaming:
             self._streaming_state['offsets'] = offsets + T
 
-        return fused_input_1, fused_input_2
+        return fused_input
 
     
     
@@ -578,7 +568,7 @@ class ClassifierFreeGuidanceDropout(DropoutModule):
         self.check(sample, condition_type, condition)
         
         if condition_type == 'audio':
-            audio_cond = sample.audio[condition] 
+            audio_cond = sample.audio[condition]  
             sample.audio[condition] = self.get_null_wav(audio_cond.wav, sr=audio_cond.sample_rate[0])
         else:
             sample.text[condition] = None
@@ -641,7 +631,7 @@ class ClassifierFreeGuidanceDropoutInference(ClassifierFreeGuidanceDropout):
             sample.audio[condition] = self.get_null_wav(audio_cond.wav, sr=audio_cond.sample_rate[0])
         else:
             if customized is None:
-                if condition in ['type_info'] and sample.text[condition] is not None:
+                if condition in ['type_info']:
                     if "[Musicality-very-high]" in sample.text[condition]:
                         sample.text[condition] = "[Musicality-very-low], ."
                         print(f"cfg unconditioning: change sample.text[condition] to [Musicality-very-low]")
